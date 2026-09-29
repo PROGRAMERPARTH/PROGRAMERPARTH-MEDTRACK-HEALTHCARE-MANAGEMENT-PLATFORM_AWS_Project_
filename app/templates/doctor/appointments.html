@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Appointments{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Manage Appointments</h1>
+        <p class="text-muted mb-0">Review consultation bookings, accept/reject requests, and track patient status.</p>
+    </div>
+    <!-- Status Filter Buttons -->
+    <div class="btn-group" role="group">
+        <a href="{{ url_for('doctor.appointments') }}" class="btn btn-outline-primary btn-sm {% if not current_status %}active{% endif %}">All</a>
+        <a href="{{ url_for('doctor.appointments', status='requested') }}" class="btn btn-outline-primary btn-sm {% if current_status == 'requested' %}active{% endif %}">Requested</a>
+        <a href="{{ url_for('doctor.appointments', status='confirmed') }}" class="btn btn-outline-primary btn-sm {% if current_status == 'confirmed' %}active{% endif %}">Confirmed</a>
+        <a href="{{ url_for('doctor.appointments', status='completed') }}" class="btn btn-outline-primary btn-sm {% if current_status == 'completed' %}active{% endif %}">Completed</a>
+        <a href="{{ url_for('doctor.appointments', status='cancelled') }}" class="btn btn-outline-primary btn-sm {% if current_status == 'cancelled' %}active{% endif %}">Cancelled</a>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        {% if appointments %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Appointment ID</th>
+                        <th>Patient</th>
+                        <th>Date & Time</th>
+                        <th>Reason / Mode</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appt in appointments %}
+                    <tr>
+                        <td>
+                            <span class="fw-semibold text-primary font-monospace small">{{ appt.id }}</span>
+                        </td>
+                        <td>
+                            <div class="fw-bold">{{ appt.patient_name }}</div>
+                            <a href="{{ url_for('doctor.patient_detail', patient_id=appt.patient_id) }}" class="small text-decoration-none">
+                                <i class="bi bi-file-earmark-person me-1"></i> Patient History
+                            </a>
+                        </td>
+                        <td>
+                            <div class="fw-medium">{{ appt.date }}</div>
+                            <div class="text-muted small">{{ appt.time_slot }}</div>
+                        </td>
+                        <td>
+                            <div class="text-dark small fw-medium">{{ appt.reason }}</div>
+                            <span class="badge bg-light text-secondary border">{{ appt.consultation_mode|capitalize }}</span>
+                        </td>
+                        <td>
+                            <span class="badge-status badge-{{ appt.status }}">{{ appt.status }}</span>
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-1">
+                                {% if appt.status == 'requested' %}
+                                <form method="POST" action="{{ url_for('appointments.accept', appointment_id=appt.id) }}" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                    <button type="submit" class="btn btn-sm btn-success">Accept</button>
+                                </form>
+                                <form method="POST" action="{{ url_for('appointments.reject', appointment_id=appt.id) }}" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Decline this appointment?')">Decline</button>
+                                </form>
+                                {% elif appt.status == 'confirmed' %}
+                                <a href="{{ url_for('records.create', appointment_id=appt.id) }}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil-square"></i> Record
+                                </a>
+                                <form method="POST" action="{{ url_for('appointments.complete', appointment_id=appt.id) }}" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-success">Complete</button>
+                                </form>
+                                {% endif %}
+                                <a href="{{ url_for('appointments.detail', appointment_id=appt.id) }}" class="btn btn-sm btn-outline-secondary">
+                                    Details
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state py-5">
+            <i class="bi bi-calendar-x empty-state-icon"></i>
+            <h5 class="fw-semibold">No appointments found</h5>
+            <p class="text-muted small">No appointments matching the selected filter criteria.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

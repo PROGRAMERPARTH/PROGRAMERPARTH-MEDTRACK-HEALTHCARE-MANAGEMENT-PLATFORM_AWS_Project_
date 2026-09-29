@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Security Audit Trail — Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Security & Access Audit Trail</h1>
+        <p class="text-muted mb-0">Immutable record of security events, authentication attempts, and sensitive data access.</p>
+    </div>
+    <div>
+        <span class="badge bg-secondary-subtle text-secondary px-3 py-2">
+            <i class="bi bi-shield-check me-1"></i> {{ logs|length }} Audit Records
+        </span>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Log ID</th>
+                        <th>Timestamp (UTC)</th>
+                        <th>Actor (User/Email)</th>
+                        <th>Action</th>
+                        <th>Resource Target</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td class="font-monospace small text-muted">{{ log.id }}</td>
+                        <td class="small">{{ log.timestamp }}</td>
+                        <td>
+                            <strong class="font-monospace text-dark">{{ log.actor_id }}</strong>
+                        </td>
+                        <td>
+                            <span class="badge {% if 'failed' in log.action or 'rejected' in log.action or 'cancelled' in log.action %}bg-danger-subtle text-danger{% elif 'login' in log.action or 'created' in log.action or 'confirmed' in log.action %}bg-success-subtle text-success{% else %}bg-primary-subtle text-primary{% endif %} font-monospace">
+                                {{ log.action }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-secondary border">{{ log.resource_type }}</span>
+                            <span class="font-monospace small text-muted ms-1">{{ log.resource_id }}</span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">No audit logs found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

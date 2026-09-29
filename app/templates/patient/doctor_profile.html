@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}{{ doctor.name }} — Doctor Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-4 pb-4 border-bottom">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="doctor-avatar bg-primary text-white" style="width: 80px; height: 80px; font-size: 2.2rem;">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <h2 class="h3 fw-bold mb-0">{{ doctor.name }}</h2>
+                                {% if doctor.verification_status == 'verified' %}
+                                <span class="badge bg-success-subtle text-success d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-patch-check-fill"></i> Verified
+                                </span>
+                                {% endif %}
+                            </div>
+                            <p class="text-primary fw-semibold mb-1">{{ doctor.specialization }}</p>
+                            <p class="text-muted small mb-0"><i class="bi bi-hospital me-1"></i> {{ doctor.hospital }} • {{ doctor.location }}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('appointments.book', doctor_id=doctor.id) }}" class="btn btn-primary btn-lg w-100 shadow-sm">
+                            <i class="bi bi-calendar-plus me-2"></i>Book Consultation
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row g-4 mt-2">
+                    <div class="col-md-7">
+                        <h5 class="fw-bold mb-3">About Doctor</h5>
+                        <p class="text-muted leading-relaxed">{{ doctor.bio or "Dedicated healthcare practitioner committed to providing evidence-based medical care and compassionate patient guidance." }}</p>
+
+                        <h5 class="fw-bold mb-3 mt-4">Professional Overview</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2 d-flex align-items-center gap-2">
+                                <i class="bi bi-mortarboard-fill text-primary"></i>
+                                <span><strong>Qualification:</strong> {{ doctor.qualification }}</span>
+                            </li>
+                            <li class="mb-2 d-flex align-items-center gap-2">
+                                <i class="bi bi-award-fill text-primary"></i>
+                                <span><strong>Experience:</strong> {{ doctor.experience_years }} Years of Clinical Practice</span>
+                            </li>
+                            <li class="mb-2 d-flex align-items-center gap-2">
+                                <i class="bi bi-geo-alt-fill text-primary"></i>
+                                <span><strong>Location:</strong> {{ doctor.location }}</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-2">
+                                <i class="bi bi-camera-video-fill text-primary"></i>
+                                <span><strong>Consultation Mode:</strong> {{ doctor.consultation_mode|capitalize }}</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="p-4 bg-light rounded-4 border">
+                            <h6 class="fw-bold mb-3"><i class="bi bi-clock-fill text-primary me-2"></i>Consultation Details</h6>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Fee:</span>
+                                <span class="fw-bold text-dark fs-5">₹{{ doctor.consultation_fee }}</span>
+                            </div>
+                            <hr class="my-2">
+                            <div class="mb-3">
+                                <span class="text-muted small fw-semibold d-block mb-1">Available Days:</span>
+                                <div class="d-flex flex-wrap gap-1">
+                                    {% for day in doctor.available_days %}
+                                    <span class="badge bg-white text-dark border px-2 py-1">{{ day }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div>
+                                <span class="text-muted small fw-semibold d-block mb-1">Time Slots:</span>
+                                <div class="d-flex flex-wrap gap-1">
+                                    {% for slot in doctor.available_time_slots %}
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">{{ slot }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="health-disclaimer mt-3">
+                            <small><i class="bi bi-info-circle me-1"></i> Appointments are subject to doctor availability and confirmation.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

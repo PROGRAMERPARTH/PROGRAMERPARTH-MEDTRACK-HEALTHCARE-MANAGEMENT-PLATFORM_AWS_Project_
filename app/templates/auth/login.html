@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-ambient-glow"></div>
+    
+    <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4 mx-auto">
+        <div class="auth-card p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="brand-icon-badge">
+                    <i class="bi bi-heart-pulse-fill"></i>
+                </div>
+                <h1 class="h3 fw-bold mb-1">Welcome back</h1>
+                <p class="text-muted small mb-0">Sign in to your secure MedTrack portal</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('auth.login') }}" id="login-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email address</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required autofocus autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label for="password" class="form-label mb-0">Password</label>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
+                        <button class="btn btn-outline-secondary" type="button" id="togglePassword" aria-label="Toggle password visibility">
+                            <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 mb-3 shadow-sm">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                </button>
+
+                <div class="text-center pt-2">
+                    <p class="text-muted small mb-1">Don't have an account yet?</p>
+                    <div class="d-flex justify-content-center align-items-center gap-2 small">
+                        <a href="{{ url_for('auth.register', role='patient') }}" class="text-decoration-none fw-bold text-primary">
+                            <i class="bi bi-person me-1"></i>Patient Sign Up
+                        </a>
+                        <span class="text-muted">•</span>
+                        <a href="{{ url_for('auth.register', role='doctor') }}" class="text-decoration-none fw-bold text-success">
+                            <i class="bi bi-person-badge me-1"></i>Doctor Registration
+                        </a>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Quick Demo Accounts -->
+            <div class="mt-4 pt-3 border-top">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em;">
+                        <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Quick Demo Access
+                    </span>
+                    <span class="badge bg-light text-secondary border">1-Click Fill</span>
+                </div>
+                <div class="d-flex flex-column gap-2">
+                    <button type="button" class="demo-account-card d-flex align-items-center justify-content-between" onclick="fillCreds('aarav@medtrack.demo', 'Patient@12345', this)">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="stat-icon-wrapper stat-icon-primary" style="width: 34px; height: 34px; font-size: 1rem;">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold small text-dark">Aarav Sharma</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">aarav@medtrack.demo</div>
+                            </div>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 small">Patient</span>
+                    </button>
+
+                    <button type="button" class="demo-account-card d-flex align-items-center justify-content-between" onclick="fillCreds('rohan@medtrack.demo', 'Doctor@12345', this)">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="stat-icon-wrapper stat-icon-info" style="width: 34px; height: 34px; font-size: 1rem;">
+                                <i class="bi bi-heart-pulse-fill"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold small text-dark">Dr. Rohan Mehta</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">rohan@medtrack.demo</div>
+                            </div>
+                        </div>
+                        <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2 py-1 small">Doctor</span>
+                    </button>
+
+                    <button type="button" class="demo-account-card d-flex align-items-center justify-content-between" onclick="fillCreds('admin@medtrack.demo', 'Admin@12345', this)">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="stat-icon-wrapper stat-icon-danger" style="width: 34px; height: 34px; font-size: 1rem;">
+                                <i class="bi bi-shield-lock-fill"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold small text-dark">Administrator</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">admin@medtrack.demo</div>
+                            </div>
+                        </div>
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 small">Admin</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="health-disclaimer text-center justify-content-center mt-3 shadow-xs">
+            <i class="bi bi-shield-check text-success fs-5"></i>
+            <span>256-bit encrypted session with verified role-based access control.</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function fillCreds(email, password, btn) {
+    const emailInput = document.getElementById('email');
+    const passInput = document.getElementById('password');
+    emailInput.value = email;
+    passInput.value = password;
+    
+    // Quick pulse highlight feedback
+    document.querySelectorAll('.demo-account-card').forEach(c => c.style.borderColor = '');
+    if (btn) {
+        btn.style.borderColor = '#0284c7';
+        btn.style.backgroundColor = '#f0f9ff';
+        setTimeout(() => {
+            btn.style.backgroundColor = '';
+        }, 600);
+    }
+}
+
+// Password toggle
+document.getElementById('togglePassword')?.addEventListener('click', function () {
+    const passInput = document.getElementById('password');
+    const icon = document.getElementById('togglePasswordIcon');
+    if (passInput.type === 'password') {
+        passInput.type = 'text';
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+    } else {
+        passInput.type = 'password';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+    }
+});
+</script>
+{% endblock %}

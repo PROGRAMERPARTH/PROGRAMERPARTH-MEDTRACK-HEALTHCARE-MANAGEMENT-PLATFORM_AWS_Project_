@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Appointments{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Your Appointments</h1>
+        <p class="text-muted mb-0">Track upcoming bookings, review visit history, and manage consultation requests.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+        <!-- Status Filter -->
+        <div class="btn-group" role="group">
+            <a href="{{ url_for('appointments.list_appointments') }}" class="btn btn-outline-primary btn-sm {% if not current_status %}active{% endif %}">All</a>
+            <a href="{{ url_for('appointments.list_appointments', status='requested') }}" class="btn btn-outline-primary btn-sm {% if current_status == 'requested' %}active{% endif %}">Requested</a>
+            <a href="{{ url_for('appointments.list_appointments', status='confirmed') }}" class="btn btn-outline-primary btn-sm {% if current_status == 'confirmed' %}active{% endif %}">Confirmed</a>
+            <a href="{{ url_for('appointments.list_appointments', status='completed') }}" class="btn btn-outline-primary btn-sm {% if current_status == 'completed' %}active{% endif %}">Completed</a>
+            <a href="{{ url_for('appointments.list_appointments', status='cancelled') }}" class="btn btn-outline-primary btn-sm {% if current_status == 'cancelled' %}active{% endif %}">Cancelled</a>
+        </div>
+        {% if current_user.role == 'patient' %}
+        <a href="{{ url_for('patient.find_doctors') }}" class="btn btn-primary btn-sm">
+            <i class="bi bi-calendar-plus me-1"></i> Book New
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        {% if appointments %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Appointment ID</th>
+                        <th>{% if current_user.role == 'patient' %}Doctor{% else %}Patient{% endif %}</th>
+                        <th>Date & Time</th>
+                        <th>Mode</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appt in appointments %}
+                    <tr>
+                        <td class="font-monospace small text-primary">{{ appt.id }}</td>
+                        <td>
+                            {% if current_user.role == 'patient' %}
+                            <div class="fw-bold">{{ appt.doctor_name }}</div>
+                            <span class="text-muted small">{{ appt.doctor_specialization }}</span>
+                            {% else %}
+                            <div class="fw-bold">{{ appt.patient_name }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="fw-medium">{{ appt.date }}</div>
+                            <span class="text-muted small">{{ appt.time_slot }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-secondary border">{{ appt.consultation_mode|capitalize }}</span>
+                        </td>
+                        <td class="small text-muted">{{ appt.reason[:40] }}{% if appt.reason|length > 40 %}...{% endif %}</td>
+                        <td>
+                            <span class="badge-status badge-{{ appt.status }}">{{ appt.status }}</span>
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ url_for('appointments.detail', appointment_id=appt.id) }}" class="btn btn-sm btn-outline-primary">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state py-5 text-center">
+            <i class="bi bi-calendar-check empty-state-icon"></i>
+            <h5 class="fw-semibold">No appointments found</h5>
+            <p class="text-muted small mb-3">No consultations found matching your current filter.</p>
+            {% if current_user.role == 'patient' %}
+            <a href="{{ url_for('patient.find_doctors') }}" class="btn btn-primary btn-sm">Find a Doctor</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

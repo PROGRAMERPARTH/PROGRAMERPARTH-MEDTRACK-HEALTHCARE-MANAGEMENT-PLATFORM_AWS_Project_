@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}All Appointments — Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Platform Consultations & Bookings</h1>
+        <p class="text-muted mb-0">Monitor all scheduled appointments, statuses, and healthcare interactions.</p>
+    </div>
+    <!-- Status Filter -->
+    <div class="btn-group" role="group">
+        <a href="{{ url_for('admin.appointments') }}" class="btn btn-outline-primary btn-sm {% if not current_status %}active{% endif %}">All</a>
+        <a href="{{ url_for('admin.appointments', status='requested') }}" class="btn btn-outline-primary btn-sm {% if current_status == 'requested' %}active{% endif %}">Requested</a>
+        <a href="{{ url_for('admin.appointments', status='confirmed') }}" class="btn btn-outline-primary btn-sm {% if current_status == 'confirmed' %}active{% endif %}">Confirmed</a>
+        <a href="{{ url_for('admin.appointments', status='completed') }}" class="btn btn-outline-primary btn-sm {% if current_status == 'completed' %}active{% endif %}">Completed</a>
+        <a href="{{ url_for('admin.appointments', status='cancelled') }}" class="btn btn-outline-primary btn-sm {% if current_status == 'cancelled' %}active{% endif %}">Cancelled</a>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date & Time</th>
+                        <th>Mode</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appt in appointments %}
+                    <tr>
+                        <td class="font-monospace small text-primary">{{ appt.id }}</td>
+                        <td class="fw-semibold">{{ appt.patient_name }}</td>
+                        <td>{{ appt.doctor_name }}</td>
+                        <td>
+                            <div>{{ appt.date }}</div>
+                            <small class="text-muted">{{ appt.time_slot }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-secondary border">{{ appt.consultation_mode|capitalize }}</span>
+                        </td>
+                        <td class="small text-muted">{{ appt.reason }}</td>
+                        <td>
+                            <span class="badge-status badge-{{ appt.status }}">{{ appt.status }}</span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">No appointments found matching filter.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

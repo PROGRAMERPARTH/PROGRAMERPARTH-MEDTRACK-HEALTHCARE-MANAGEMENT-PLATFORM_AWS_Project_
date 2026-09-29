@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Verification & Management — Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Doctor Verification & Directory</h1>
+        <p class="text-muted mb-0">Review incoming doctor registration requests, verify credentials, and manage active clinician profiles.</p>
+    </div>
+    {% if pending_count > 0 %}
+    <div>
+        <span class="badge bg-warning text-dark px-3 py-2 fs-6">
+            <i class="bi bi-exclamation-circle-fill me-1"></i> {{ pending_count }} Doctor Application{{ 's' if pending_count > 1 else '' }} Pending Review
+        </span>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Status Filter Tabs -->
+<div class="d-flex flex-wrap gap-2 mb-4 p-1 bg-white rounded-3 border shadow-xs">
+    <a href="{{ url_for('admin.doctors') }}" class="btn btn-sm {% if not current_status %}btn-primary{% else %}btn-light text-secondary border-0{% endif %}">
+        <i class="bi bi-people me-1"></i> All Clinicians <span class="badge bg-white text-dark ms-1">{{ total_count }}</span>
+    </a>
+    <a href="{{ url_for('admin.doctors', status='pending') }}" class="btn btn-sm {% if current_status == 'pending' %}btn-warning text-dark fw-bold{% else %}btn-light text-secondary border-0{% endif %}">
+        <i class="bi bi-clock-history me-1"></i> Pending Approval
+        {% if pending_count > 0 %}
+        <span class="badge bg-danger text-white ms-1">{{ pending_count }}</span>
+        {% endif %}
+    </a>
+    <a href="{{ url_for('admin.doctors', status='verified') }}" class="btn btn-sm {% if current_status == 'verified' %}btn-success{% else %}btn-light text-secondary border-0{% endif %}">
+        <i class="bi bi-patch-check me-1"></i> Verified Doctors <span class="badge bg-white text-dark ms-1">{{ verified_count }}</span>
+    </a>
+    <a href="{{ url_for('admin.doctors', status='rejected') }}" class="btn btn-sm {% if current_status == 'rejected' %}btn-danger{% else %}btn-light text-secondary border-0{% endif %}">
+        <i class="bi bi-x-circle me-1"></i> Rejected Applications
+    </a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Doctor / Clinician</th>
+                        <th>Specialization & Qualification</th>
+                        <th>Hospital / Clinic</th>
+                        <th>Consultation Details</th>
+                        <th>Verification Status</th>
+                        <th class="text-end pe-4">Admin Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in doctors %}
+                    {% set is_pending = doc.verification_status == 'Pending Approval' or doc.user_status == 'pending' %}
+                    {% set is_verified = doc.verification_status == 'Verified' and doc.user_status == 'active' %}
+                    {% set is_rejected = doc.verification_status == 'Rejected' or doc.user_status == 'rejected' %}
+                    <tr class="{% if is_pending %}table-warning-subtle{% endif %}">
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="doctor-avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark">{{ doc.name }}</div>
+                                    <span class="text-muted small d-block"><i class="bi bi-envelope me-1"></i>{{ doc.email }}</span>
+                                    {% if doc.phone %}<span class="text-muted small"><i class="bi bi-telephone me-1"></i>{{ doc.phone }}</span>{% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary-subtle text-primary mb-1">{{ doc.specialization }}</span>
+                            <div class="small text-dark fw-medium">{{ doc.qualification }}</div>
+                            <small class="text-muted">{{ doc.experience_years }} yrs experience</small>
+                        </td>
+                        <td>
+                            <div class="fw-medium text-dark"><i class="bi bi-hospital me-1 text-secondary"></i>{{ doc.hospital or doc.clinic }}</div>
+                            <small class="text-muted"><i class="bi bi-geo-alt me-1"></i>{{ doc.location }}</small>
+                        </td>
+                        <td>
+                            <div class="fw-semibold text-primary">₹{{ doc.consultation_fee or doc.fee }}</div>
+                            <small class="text-muted d-block">{{ doc.consultation_mode }}</small>
+                        </td>
+                        <td>
+                            {% if is_pending %}
+                            <span class="badge bg-warning text-dark border border-warning px-2 py-1">
+                                <i class="bi bi-hourglass-split me-1"></i>Pending Approval
+                            </span>
+                            {% elif is_verified %}
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                                <i class="bi bi-patch-check-fill me-1"></i>Verified & Active
+                            </span>
+                            {% elif is_rejected %}
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
+                                <i class="bi bi-x-circle-fill me-1"></i>Application Declined
+                            </span>
+                            {% else %}
+                            <span class="badge bg-secondary-subtle text-secondary px-2 py-1">
+                                {{ doc.verification_status }}
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            {% if is_pending %}
+                            <div class="d-flex justify-content-end gap-2">
+                                <form method="POST" action="{{ url_for('admin.approve_doctor', doctor_id=doc.id, status=current_status) }}" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                    <button type="submit" class="btn btn-success btn-sm px-3 shadow-sm">
+                                        <i class="bi bi-check-lg me-1"></i> Approve & Activate
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ url_for('admin.reject_doctor', doctor_id=doc.id, status=current_status) }}" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-x-lg"></i> Decline
+                                    </button>
+                                </form>
+                            </div>
+                            {% elif is_verified %}
+                            <div class="d-inline-flex align-items-center text-success small fw-medium">
+                                <i class="bi bi-check-circle-fill me-1"></i> Verified Access
+                            </div>
+                            {% else %}
+                            <form method="POST" action="{{ url_for('admin.approve_doctor', doctor_id=doc.id, status=current_status) }}" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                <button type="submit" class="btn btn-outline-success btn-sm">
+                                    <i class="bi bi-arrow-clockwise me-1"></i> Re-Approve
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-people fs-2 d-block text-secondary mb-2"></i>
+                            No clinicians found for this filter.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

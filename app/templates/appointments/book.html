@@ -1,0 +1,466 @@
+{% extends "base.html" %}
+
+{% block title %}Book Consultation with {{ doctor.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-9">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3 border-bottom">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="doctor-avatar bg-primary text-white d-flex align-items-center justify-content-center rounded-circle" style="width: 50px; height: 50px;">
+                            <i class="bi bi-calendar-plus fs-4"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-0 fw-bold">Book Consultation</h4>
+                            <p class="text-muted small mb-0">Schedule an appointment with <strong>{{ doctor.name }}</strong> ({{ doctor.specialization }})</p>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('patient.doctor_profile', doctor_id=doctor.id) }}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-person me-1"></i> View Doctor Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                <!-- Doctor Summary Box -->
+                <div class="p-3 bg-light rounded-3 mb-4 border">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-5">
+                            <span class="text-muted small d-block">Hospital / Clinic</span>
+                            <strong class="text-dark"><i class="bi bi-hospital me-1 text-primary"></i> {{ doctor.hospital or doctor.clinic }} ({{ doctor.location }})</strong>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="text-muted small d-block">Doctor Schedule</span>
+                            <span class="badge bg-white text-dark border"><i class="bi bi-calendar-week me-1 text-primary"></i> {{ doctor.available_days|join(', ') }}</span>
+                        </div>
+                        <div class="col-md-3 text-md-end">
+                            <span class="text-muted small d-block">Consultation Fee</span>
+                            <strong class="text-primary fs-5">₹{{ doctor.consultation_fee or doctor.fee }}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('appointments.book', doctor_id=doctor.id) }}" id="booking-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <input type="hidden" name="time" id="time_slot_input" required>
+
+                    <!-- Section 1: Choose Date -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label for="appointment_date" class="form-label fw-bold mb-0">
+                                <i class="bi bi-calendar3 text-primary me-1"></i> 1. Select Appointment Date
+                            </label>
+                            <span class="text-muted small" id="day-of-week-indicator"></span>
+                        </div>
+
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-6">
+                                <input type="date" class="form-control" id="appointment_date" name="date" min="{{ today }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex gap-2 flex-wrap" id="quick-date-pills">
+                                    <button type="button" class="btn btn-sm btn-outline-primary quick-date-btn" data-days="0">Today</button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary quick-date-btn" data-days="1">Tomorrow</button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary quick-date-btn" data-days="2">In 2 Days</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="date-warning-box" class="mt-2 d-none">
+                            <div class="alert alert-warning py-2 px-3 small mb-0 d-flex align-items-center gap-2">
+                                <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                                <span id="date-warning-text"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Choose Time Slot -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label fw-bold mb-0">
+                                <i class="bi bi-clock text-primary me-1"></i> 2. Available Time Slots
+                            </label>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-check-circle me-1"></i> Available</span>
+                                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle"><i class="bi bi-slash-circle me-1"></i> Booked</span>
+                            </div>
+                        </div>
+
+                        <div id="slots-container" class="p-3 bg-light rounded-3 border">
+                            <div id="slots-prompt" class="text-center py-4 text-muted">
+                                <i class="bi bi-calendar2-range fs-2 d-block text-secondary mb-2"></i>
+                                <span>Please choose an appointment date above to view available time slots.</span>
+                            </div>
+
+                            <div id="slots-loading" class="text-center py-4 d-none">
+                                <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                                <span class="text-muted">Checking real-time doctor availability...</span>
+                            </div>
+
+                            <div id="slots-content" class="d-none">
+                                <!-- Morning Slots -->
+                                <div id="morning-slots-section" class="mb-3">
+                                    <div class="text-muted small fw-semibold mb-2 d-flex align-items-center gap-1">
+                                        <i class="bi bi-brightness-alt-high text-warning"></i> Morning Consultation Slots
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2" id="morning-slots-list"></div>
+                                </div>
+
+                                <!-- Afternoon / Evening Slots -->
+                                <div id="afternoon-slots-section">
+                                    <div class="text-muted small fw-semibold mb-2 d-flex align-items-center gap-1">
+                                        <i class="bi bi-sun text-warning"></i> Afternoon & Evening Slots
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2" id="afternoon-slots-list"></div>
+                                </div>
+                            </div>
+
+                            <div id="slots-empty" class="text-center py-4 d-none">
+                                <i class="bi bi-calendar-x fs-2 d-block text-warning mb-2"></i>
+                                <h6 class="fw-bold mb-1">No Time Slots Available</h6>
+                                <p class="text-muted small mb-0" id="slots-empty-msg">All consultation slots for this date are fully booked or the doctor is unavailable. Please choose another date.</p>
+                            </div>
+                        </div>
+
+                        <!-- Fallback accessible select element -->
+                        <select class="form-select d-none" id="time_slot_select">
+                            <option value="" selected disabled>Select a slot...</option>
+                        </select>
+                        <div class="form-text small mt-1 text-muted" id="selected-slot-feedback">
+                            Click an available time slot chip above to select your preferred appointment time.
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Consultation Details -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-12">
+                            <label for="consultation_mode" class="form-label fw-bold">
+                                <i class="bi bi-camera-video text-primary me-1"></i> 3. Consultation Mode
+                            </label>
+                            <select class="form-select" id="consultation_mode" name="mode" required>
+                                <option value="In-person" {% if doctor.consultation_mode == 'in-person' or doctor.consultation_mode == 'In-person' or 'in-person' in doctor.consultation_mode|lower %}selected{% endif %}>
+                                    🏥 In-person Consultation (at {{ doctor.hospital or doctor.clinic }})
+                                </option>
+                                <option value="Video" {% if doctor.consultation_mode == 'video' or doctor.consultation_mode == 'Video' %}selected{% endif %}>
+                                    💻 Video Telehealth Consultation (Online)
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="reason" class="form-label fw-bold">
+                                <i class="bi bi-chat-square-text text-primary me-1"></i> 4. Reason for Consultation / Symptoms
+                            </label>
+                            <textarea class="form-control" id="reason" name="reason" rows="3" placeholder="Describe symptoms or reasons for visit (e.g., ongoing fever, regular checkup, follow-up, lab test review)..." required></textarea>
+                            <div class="form-text small">Do not include urgent emergency symptoms. In case of medical emergency, contact your nearest emergency center.</div>
+                        </div>
+                    </div>
+
+                    <!-- Booking Summary Preview Card -->
+                    <div id="booking-preview-card" class="card bg-primary-subtle border-primary-subtle mb-4 d-none">
+                        <div class="card-body p-3">
+                            <h6 class="fw-bold text-primary mb-2"><i class="bi bi-check2-circle me-1"></i> Consultation Summary</h6>
+                            <div class="row g-2 small text-dark">
+                                <div class="col-sm-6 col-md-3">
+                                    <span class="text-muted d-block">Doctor:</span>
+                                    <strong>{{ doctor.name }}</strong>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <span class="text-muted d-block">Selected Date:</span>
+                                    <strong id="summary-date">-</strong>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <span class="text-muted d-block">Selected Slot:</span>
+                                    <strong id="summary-slot" class="text-primary">-</strong>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <span class="text-muted d-block">Consultation Fee:</span>
+                                    <strong class="text-success">₹{{ doctor.consultation_fee or doctor.fee }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="health-disclaimer my-4 p-3 bg-light rounded border">
+                        <i class="bi bi-shield-check text-success me-1"></i> Your appointment request will be sent to <strong>{{ doctor.name }}</strong> for confirmation. You will receive an instant notification once confirmed.
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('patient.doctor_profile', doctor_id=doctor.id) }}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 py-2" id="submit-booking-btn">
+                            <i class="bi bi-calendar-check me-1"></i> Confirm & Book Appointment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.time-slot-btn {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 1rem;
+    border-radius: 0.5rem;
+    border: 1.5px solid #dee2e6;
+    background: #ffffff;
+    color: #212529;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    min-width: 110px;
+    user-select: none;
+}
+.time-slot-btn:hover:not(:disabled) {
+    border-color: #0d6efd;
+    background: #f0f7ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(13, 110, 253, 0.15);
+}
+.time-slot-btn.active {
+    background: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.35);
+}
+.time-slot-btn.active .slot-badge {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+}
+.time-slot-btn:disabled, .time-slot-btn.booked {
+    background: #e9ecef;
+    border-color: #dee2e6;
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.7;
+    text-decoration: line-through;
+}
+.time-slot-btn .slot-badge {
+    font-size: 0.65rem;
+    font-weight: 500;
+    text-decoration: none;
+    margin-top: 0.15rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const doctorId = "{{ doctor.id }}";
+    const availableDays = {{ doctor.available_days|tojson }};
+    const dateInput = document.getElementById('appointment_date');
+    const slotInput = document.getElementById('time_slot_input');
+    const slotSelectFallback = document.getElementById('time_slot_select');
+    const dayOfWeekIndicator = document.getElementById('day-of-week-indicator');
+    const dateWarningBox = document.getElementById('date-warning-box');
+    const dateWarningText = document.getElementById('date-warning-text');
+    
+    const slotsPrompt = document.getElementById('slots-prompt');
+    const slotsLoading = document.getElementById('slots-loading');
+    const slotsContent = document.getElementById('slots-content');
+    const slotsEmpty = document.getElementById('slots-empty');
+    const slotsEmptyMsg = document.getElementById('slots-empty-msg');
+    
+    const morningSlotsList = document.getElementById('morning-slots-list');
+    const morningSlotsSection = document.getElementById('morning-slots-section');
+    const afternoonSlotsList = document.getElementById('afternoon-slots-list');
+    const afternoonSlotsSection = document.getElementById('afternoon-slots-section');
+    
+    const previewCard = document.getElementById('booking-preview-card');
+    const summaryDate = document.getElementById('summary-date');
+    const summarySlot = document.getElementById('summary-slot');
+    const feedbackText = document.getElementById('selected-slot-feedback');
+    const bookingForm = document.getElementById('booking-form');
+
+    // Quick date pills
+    document.querySelectorAll('.quick-date-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const daysToAdd = parseInt(this.getAttribute('data-days') || '0', 10);
+            const targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + daysToAdd);
+            const formatted = targetDate.toISOString().split('T')[0];
+            dateInput.value = formatted;
+            dateInput.dispatchEvent(new Event('change'));
+        });
+    });
+
+    async function loadSlotsForDate(selectedDate) {
+        if (!selectedDate) {
+            slotsPrompt.classList.remove('d-none');
+            slotsLoading.classList.add('d-none');
+            slotsContent.classList.add('d-none');
+            slotsEmpty.classList.add('d-none');
+            dateWarningBox.classList.add('d-none');
+            dayOfWeekIndicator.textContent = '';
+            slotInput.value = '';
+            previewCard.classList.add('d-none');
+            return;
+        }
+
+        // Check day of week
+        const dParts = selectedDate.split('-');
+        const dateObj = new Date(dParts[0], dParts[1] - 1, dParts[2]);
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayName = dayNames[dateObj.getDay()];
+        
+        dayOfWeekIndicator.textContent = `(${dayName})`;
+
+        // Validate doctor working day
+        if (availableDays && availableDays.length > 0 && !availableDays.includes(dayName)) {
+            dateWarningText.textContent = `Dr. {{ doctor.name }} is not scheduled to consult on ${dayName}s. Available days: ${availableDays.join(', ')}.`;
+            dateWarningBox.classList.remove('d-none');
+            slotsPrompt.classList.add('d-none');
+            slotsLoading.classList.add('d-none');
+            slotsContent.classList.add('d-none');
+            slotsEmpty.classList.remove('d-none');
+            slotsEmptyMsg.textContent = `Dr. {{ doctor.name }} is not available on ${dayName}s. Please pick a working day (${availableDays.join(', ')}).`;
+            slotInput.value = '';
+            return;
+        } else {
+            dateWarningBox.classList.add('d-none');
+        }
+
+        // Fetch slots from API
+        slotsPrompt.classList.add('d-none');
+        slotsEmpty.classList.add('d-none');
+        slotsContent.classList.add('d-none');
+        slotsLoading.classList.remove('d-none');
+        slotInput.value = '';
+        morningSlotsList.innerHTML = '';
+        afternoonSlotsList.innerHTML = '';
+        slotSelectFallback.innerHTML = '<option value="" disabled selected>Select a slot...</option>';
+
+        try {
+            const res = await fetch(`/appointments/slots/${doctorId}/${selectedDate}`);
+            slotsLoading.classList.add('d-none');
+
+            if (!res.ok) {
+                throw new Error('Failed to fetch slots');
+            }
+
+            const rawSlots = await res.json();
+            
+            // Normalize slots (handles both array of objects or strings)
+            let slots = [];
+            if (Array.isArray(rawSlots)) {
+                slots = rawSlots.map(s => {
+                    if (typeof s === 'string') {
+                        return { time: s, display_time: s, available: true, period: 'General' };
+                    }
+                    return {
+                        time: s.time || s.slot || '',
+                        display_time: s.display_time || s.time || '',
+                        available: s.available !== false,
+                        period: s.period || 'General'
+                    };
+                });
+            }
+
+            if (!slots || slots.length === 0) {
+                slotsEmpty.classList.remove('d-none');
+                slotsEmptyMsg.textContent = 'No consultation slots found for this date. Please select another day.';
+                return;
+            }
+
+            let morningCount = 0;
+            let afternoonCount = 0;
+
+            slots.forEach(slot => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `time-slot-btn ${slot.available ? '' : 'booked'}`;
+                btn.disabled = !slot.available;
+                btn.setAttribute('data-time', slot.time);
+                btn.setAttribute('data-display', slot.display_time);
+
+                btn.innerHTML = `
+                    <span><i class="bi bi-clock me-1"></i> ${slot.display_time}</span>
+                    <span class="badge ${slot.available ? 'bg-success-subtle text-success' : 'bg-secondary text-white'} slot-badge">
+                        ${slot.available ? 'Available' : 'Booked'}
+                    </span>
+                `;
+
+                if (slot.available) {
+                    btn.addEventListener('click', function() {
+                        document.querySelectorAll('.time-slot-btn').forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        slotInput.value = slot.time;
+                        slotSelectFallback.value = slot.time;
+                        
+                        // Update summary preview
+                        summaryDate.textContent = selectedDate;
+                        summarySlot.textContent = slot.display_time;
+                        previewCard.classList.remove('d-none');
+                        feedbackText.innerHTML = `<span class="text-success fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Selected Time Slot: ${slot.display_time}</span>`;
+                    });
+                }
+
+                // Add to fallback select
+                const opt = document.createElement('option');
+                opt.value = slot.time;
+                opt.textContent = `${slot.display_time} ${slot.available ? '' : '(Booked)'}`;
+                opt.disabled = !slot.available;
+                slotSelectFallback.appendChild(opt);
+
+                // Group by period
+                const period = slot.period ? slot.period.toLowerCase() : '';
+                if (period === 'morning' || (slot.time && parseInt(slot.time.split(':')[0]) < 12)) {
+                    morningSlotsList.appendChild(btn);
+                    morningCount++;
+                } else {
+                    afternoonSlotsList.appendChild(btn);
+                    afternoonCount++;
+                }
+            });
+
+            morningSlotsSection.style.display = morningCount > 0 ? 'block' : 'none';
+            afternoonSlotsSection.style.display = afternoonCount > 0 ? 'block' : 'none';
+            slotsContent.classList.remove('d-none');
+
+        } catch (err) {
+            console.error('Error loading slots:', err);
+            slotsLoading.classList.add('d-none');
+            slotsEmpty.classList.remove('d-none');
+            slotsEmptyMsg.textContent = 'Could not load time slots. Please refresh or try another date.';
+        }
+    }
+
+    if (dateInput) {
+        dateInput.addEventListener('change', function() {
+            loadSlotsForDate(this.value);
+        });
+
+        // If date already has a value, load immediately
+        if (dateInput.value) {
+            loadSlotsForDate(dateInput.value);
+        } else {
+            // Pick tomorrow by default or next weekday
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            dateInput.value = tomorrow.toISOString().split('T')[0];
+            loadSlotsForDate(dateInput.value);
+        }
+    }
+
+    // Form submission validation
+    if (bookingForm) {
+        bookingForm.addEventListener('submit', function(e) {
+            if (!slotInput.value) {
+                e.preventDefault();
+                alert('Please select an available Time Slot before confirming your appointment.');
+                document.getElementById('slots-container').scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
+

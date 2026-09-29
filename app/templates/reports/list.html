@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Diagnostic Reports{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Diagnostic Reports & Lab Results</h1>
+        <p class="text-muted mb-0">Secure repository of blood tests, imaging scans (X-Ray, MRI), and pathology documents.</p>
+    </div>
+    {% if current_user.role == 'patient' %}
+    <a href="{{ url_for('reports.upload') }}" class="btn btn-primary">
+        <i class="bi bi-upload me-1"></i> Upload New Report
+    </a>
+    {% endif %}
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        {% if reports %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Report Title / Type</th>
+                        <th>{% if current_user.role == 'patient' %}Doctor{% else %}Patient{% endif %}</th>
+                        <th>Report Date</th>
+                        <th>Uploaded On</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rpt in reports %}
+                    <tr>
+                        <td>
+                            <div class="fw-bold d-flex align-items-center gap-2">
+                                <i class="bi bi-file-earmark-medical text-primary fs-5"></i>
+                                {{ rpt.title }}
+                            </div>
+                            <span class="badge bg-light text-secondary border small mt-1">{{ rpt.report_type }}</span>
+                            {% if rpt.description %}
+                            <p class="text-muted small mb-0 mt-1">{{ rpt.description }}</p>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if current_user.role == 'patient' %}
+                            <div class="fw-semibold">{{ rpt.doctor_name or 'General / Independent' }}</div>
+                            {% else %}
+                            <div class="fw-semibold">{{ rpt.patient_name }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="fw-medium">{{ rpt.report_date }}</td>
+                        <td class="text-muted small">{{ rpt.uploaded_at[:10] }}</td>
+                        <td>
+                            <span class="badge {% if rpt.status == 'reviewed' %}bg-success-subtle text-success{% else %}bg-warning-subtle text-warning{% endif %}">
+                                <i class="bi {% if rpt.status == 'reviewed' %}bi-check-all{% else %}bi-hourglass-split{% endif %} me-1"></i>
+                                {{ rpt.status|capitalize }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-1">
+                                <a href="{{ url_for('reports.download', report_id=rpt.id) }}" class="btn btn-sm btn-outline-primary" title="Download / View File">
+                                    <i class="bi bi-download"></i> Download
+                                </a>
+                                {% if current_user.role == 'doctor' and rpt.status != 'reviewed' %}
+                                <form method="POST" action="{{ url_for('reports.review', report_id=rpt.id) }}" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                    <button type="submit" class="btn btn-sm btn-success" title="Mark as Reviewed">
+                                        <i class="bi bi-check2"></i> Mark Reviewed
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state py-5 text-center">
+            <i class="bi bi-file-earmark-medical empty-state-icon"></i>
+            <h5 class="fw-semibold">No diagnostic reports found</h5>
+            <p class="text-muted small mb-3">Upload lab results, blood work, or imaging scans to share with your consulting physicians.</p>
+            {% if current_user.role == 'patient' %}
+            <a href="{{ url_for('reports.upload') }}" class="btn btn-primary btn-sm">Upload Diagnostic Report</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Medical Records{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Medical Records & Consultation History</h1>
+        <p class="text-muted mb-0">Chronological history of diagnoses, clinical assessments, and physician prescriptions.</p>
+    </div>
+    {% if current_user.role == 'patient' %}
+    <a href="{{ url_for('reports.list_reports') }}" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-clipboard2-pulse me-1"></i> View Diagnostic Reports
+    </a>
+    {% endif %}
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        {% if records %}
+        <div class="timeline">
+            {% for rec in records %}
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-journal-medical text-primary fs-5"></i>
+                            <strong class="text-dark">
+                                {% if current_user.role == 'patient' %}
+                                Consultation with {{ rec.doctor_name }}
+                                {% else %}
+                                Patient: {{ rec.patient_name }}
+                                {% endif %}
+                            </strong>
+                        </div>
+                        <div>
+                            <span class="badge bg-light text-muted border font-monospace small me-2">{{ rec.id }}</span>
+                            <span class="badge bg-primary-subtle text-primary">{{ rec.record_date }}</span>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3 h-100 border">
+                                    <span class="text-muted small fw-semibold text-uppercase d-block mb-1">
+                                        <i class="bi bi-activity text-primary me-1"></i> Clinical Notes & Diagnosis
+                                    </span>
+                                    <p class="mb-0 text-dark">{{ rec.clinical_notes }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3 h-100 border">
+                                    <span class="text-muted small fw-semibold text-uppercase d-block mb-1">
+                                        <i class="bi bi-prescription2 text-success me-1"></i> Treatment & Prescription
+                                    </span>
+                                    <p class="mb-0 text-dark">{{ rec.treatment_notes or 'No specific medications prescribed.' }}</p>
+                                </div>
+                            </div>
+                            {% if rec.follow_up %}
+                            <div class="col-12">
+                                <div class="p-3 bg-primary-subtle rounded-3 text-primary border border-primary-subtle">
+                                    <span class="small fw-semibold text-uppercase d-block mb-1">
+                                        <i class="bi bi-calendar-check me-1"></i> Follow-up Recommendations
+                                    </span>
+                                    <p class="mb-0 small text-dark">{{ rec.follow_up }}</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="card border-0 shadow-sm text-center py-5">
+            <i class="bi bi-journal-x empty-state-icon"></i>
+            <h5 class="fw-semibold">No medical records available yet</h5>
+            <p class="text-muted small mb-3">Clinical notes entered after your consultations will be securely archived here.</p>
+            {% if current_user.role == 'patient' %}
+            <div>
+                <a href="{{ url_for('patient.find_doctors') }}" class="btn btn-primary btn-sm">Find Doctor to Book</a>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

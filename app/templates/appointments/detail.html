@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Appointment {{ appointment.id }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="mb-3">
+            <a href="{{ url_for('appointments.list_appointments') }}" class="text-decoration-none text-muted small">
+                <i class="bi bi-arrow-left me-1"></i> Back to Appointments
+            </a>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small">Appointment Ref:</span>
+                    <h5 class="fw-bold font-monospace text-primary mb-0">{{ appointment.id }}</h5>
+                </div>
+                <span class="badge-status badge-{{ appointment.status }} fs-6">
+                    {{ appointment.status }}
+                </span>
+            </div>
+
+            <div class="card-body p-4">
+                <!-- Appointment Timing & Mode -->
+                <div class="row g-3 p-3 bg-light rounded-3 mb-4 border">
+                    <div class="col-md-4">
+                        <span class="text-muted small d-block"><i class="bi bi-calendar3 me-1"></i> Date:</span>
+                        <strong class="fs-6">{{ appointment.date }}</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <span class="text-muted small d-block"><i class="bi bi-clock me-1"></i> Time Slot:</span>
+                        <strong class="fs-6">{{ appointment.time_slot }}</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <span class="text-muted small d-block"><i class="bi bi-camera-video me-1"></i> Mode:</span>
+                        <strong class="fs-6">{{ appointment.consultation_mode|capitalize }}</strong>
+                    </div>
+                </div>
+
+                <!-- Doctor & Patient Overview -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 h-100">
+                            <span class="text-muted small fw-semibold text-uppercase d-block mb-2">Doctor Information</span>
+                            <h6 class="fw-bold mb-1">{{ doctor.name if doctor else 'N/A' }}</h6>
+                            <p class="text-primary small mb-1">{{ doctor.specialization if doctor else '' }}</p>
+                            <p class="text-muted small mb-0"><i class="bi bi-hospital me-1"></i> {{ doctor.hospital if doctor else '' }} ({{ doctor.location if doctor else '' }})</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 h-100">
+                            <span class="text-muted small fw-semibold text-uppercase d-block mb-2">Patient Information</span>
+                            <h6 class="fw-bold mb-1">{{ patient.name if patient else 'N/A' }}</h6>
+                            <p class="text-muted small mb-1"><i class="bi bi-telephone me-1"></i> {{ patient.phone if patient else '' }}</p>
+                            <p class="text-muted small mb-0"><i class="bi bi-shield-plus me-1"></i> Emergency: {{ patient.emergency_contact if patient else '' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consultation Reason -->
+                <div class="mb-4">
+                    <span class="text-muted small fw-semibold text-uppercase d-block mb-2">Reason for Visit</span>
+                    <div class="p-3 bg-white border rounded-3">
+                        <p class="mb-0 text-dark">{{ appointment.reason }}</p>
+                    </div>
+                </div>
+
+                <!-- Actions Section -->
+                <div class="border-top pt-4">
+                    {% if current_user.role == 'patient' %}
+                        {% if appointment.status in ['requested', 'confirmed', 'rescheduled'] %}
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('reports.upload') }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-upload me-1"></i> Upload Test Report
+                                </a>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#rescheduleForm">
+                                    <i class="bi bi-calendar-event me-1"></i> Reschedule
+                                </button>
+                                <form method="POST" action="{{ url_for('appointments.cancel', appointment_id=appointment.id) }}" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this appointment?')">
+                                        <i class="bi bi-x-circle me-1"></i> Cancel Booking
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Reschedule Collapse Form -->
+                        <div class="collapse mt-3" id="rescheduleForm">
+                            <div class="card card-body bg-light border p-3">
+                                <h6 class="fw-bold mb-2">Select New Date & Time</h6>
+                                <form method="POST" action="{{ url_for('appointments.reschedule', appointment_id=appointment.id) }}" class="row g-2">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                    <div class="col-md-6">
+                                        <input type="date" class="form-control form-control-sm" name="new_date" id="reschedule_date" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <select class="form-select form-select-sm" name="new_time" id="reschedule_time" required>
+                                            {% for slot in doctor.available_time_slots %}
+                                            <option value="{{ slot }}">{{ slot }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-12 text-end mt-2">
+                                        <button type="submit" class="btn btn-primary btn-sm">Confirm Reschedule</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% elif current_user.role == 'doctor' %}
+                        <div class="d-flex justify-content-end gap-2">
+                            {% if appointment.status == 'requested' %}
+                            <form method="POST" action="{{ url_for('appointments.accept', appointment_id=appointment.id) }}" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-lg me-1"></i> Accept Appointment
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ url_for('appointments.reject', appointment_id=appointment.id) }}" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Decline this appointment?')">
+                                    <i class="bi bi-x-lg me-1"></i> Decline Request
+                                </button>
+                            </form>
+                            {% elif appointment.status == 'confirmed' %}
+                            <a href="{{ url_for('records.create', appointment_id=appointment.id) }}" class="btn btn-primary">
+                                <i class="bi bi-pencil-square me-1"></i> Record Diagnosis & Notes
+                            </a>
+                            <form method="POST" action="{{ url_for('appointments.complete', appointment_id=appointment.id) }}" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                <button type="submit" class="btn btn-outline-success">
+                                    <i class="bi bi-check-circle me-1"></i> Mark Consultation Completed
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const reschedDate = document.getElementById('reschedule_date');
+    const reschedTime = document.getElementById('reschedule_time');
+    if (reschedDate && reschedTime) {
+        // Set min date to today
+        reschedDate.min = new Date().toISOString().split('T')[0];
+        
+        reschedDate.addEventListener('change', async function() {
+            const selectedDate = this.value;
+            if (!selectedDate) return;
+            reschedTime.innerHTML = '<option value="" disabled selected>Loading slots...</option>';
+            try {
+                const res = await fetch(`/appointments/slots/{{ doctor.id }}/${selectedDate}`);
+                if (res.ok) {
+                    const rawSlots = await res.json();
+                    reschedTime.innerHTML = '';
+                    let availableCount = 0;
+                    if (Array.isArray(rawSlots) && rawSlots.length > 0) {
+                        rawSlots.forEach(s => {
+                            const timeVal = typeof s === 'string' ? s : s.time;
+                            const displayVal = typeof s === 'string' ? s : (s.display_time || s.time);
+                            const isAvail = typeof s === 'string' ? true : (s.available !== false);
+                            const opt = document.createElement('option');
+                            opt.value = timeVal;
+                            opt.textContent = `${displayVal} ${isAvail ? '' : '(Booked)'}`;
+                            opt.disabled = !isAvail;
+                            if (isAvail) availableCount++;
+                            reschedTime.appendChild(opt);
+                        });
+                    }
+                    if (availableCount === 0) {
+                        reschedTime.innerHTML = '<option value="" disabled selected>No slots available on this date</option>';
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to load reschedule slots', err);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

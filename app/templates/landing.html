@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MedTrack — Secure healthcare management. Book appointments, manage records, and connect with doctors.">
+    <title>MedTrack — Healthcare Management, Simplified</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body class="landing-page">
+    <!-- Landing Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top landing-nav" id="landing-nav">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2 fs-4" href="/">
+                <i class="bi bi-heart-pulse-fill"></i> MedTrack
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#landingNavContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="landingNavContent">
+                <ul class="navbar-nav ms-auto align-items-center gap-2">
+                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#how-it-works">How It Works</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#security">Security</a></li>
+                    <li class="nav-item"><a class="btn btn-outline-light btn-sm px-3" href="{{ url_for('auth.login') }}">Login</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="btn btn-light btn-sm px-3 fw-semibold text-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Register
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                            <li><a class="dropdown-item py-2" href="{{ url_for('auth.register', role='patient') }}"><i class="bi bi-person me-2 text-primary"></i>Register as Patient</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ url_for('auth.register', role='doctor') }}"><i class="bi bi-person-badge me-2 text-success"></i>Register as Doctor</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section d-flex align-items-center" id="hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <h1 class="display-3 fw-800 text-white mb-3 hero-title">
+                        Healthcare Management,<br><span class="text-accent">Simplified.</span>
+                    </h1>
+                    <p class="lead text-white-50 mb-4 hero-subtitle" style="max-width: 540px;">
+                        MedTrack connects patients and certified clinicians through secure appointment management, medical records, reports, and real-time notifications.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="{{ url_for('auth.register', role='patient') }}" class="btn btn-accent btn-lg px-4 shadow">
+                            <i class="bi bi-person-plus me-2"></i>Patient Sign Up
+                        </a>
+                        <a href="{{ url_for('auth.register', role='doctor') }}" class="btn btn-outline-light btn-lg px-4">
+                            <i class="bi bi-person-badge me-2"></i>Doctor Registration
+                        </a>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-link text-white text-decoration-none d-flex align-items-center">
+                            Sign In <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                    <p class="text-white-50 small mt-3"><i class="bi bi-shield-check me-1"></i> Cloud-powered · Secure · HIPAA-aware architecture</p>
+                </div>
+                <div class="col-lg-5 d-none d-lg-flex justify-content-center">
+                    <div class="hero-illustration">
+                        <div class="hero-card card-1">
+                            <i class="bi bi-calendar-check-fill"></i>
+                            <span>Appointment Confirmed</span>
+                        </div>
+                        <div class="hero-card card-2">
+                            <i class="bi bi-file-medical-fill"></i>
+                            <span>Records Updated</span>
+                        </div>
+                        <div class="hero-card card-3">
+                            <i class="bi bi-bell-fill"></i>
+                            <span>New Notification</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5 bg-white" id="features">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold display-6">Why MedTrack?</h2>
+                <p class="text-muted mx-auto" style="max-width: 600px;">Everything you need to manage healthcare — from booking appointments to tracking medical records — in one secure platform.</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card text-center p-4 h-100">
+                        <div class="feature-icon bg-primary-soft mb-3"><i class="bi bi-calendar-heart text-primary"></i></div>
+                        <h5 class="fw-semibold">Easy Appointment Booking</h5>
+                        <p class="text-muted small">Search doctors, check availability, and book appointments in minutes with real-time slot management.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card text-center p-4 h-100">
+                        <div class="feature-icon bg-success-soft mb-3"><i class="bi bi-shield-lock text-success"></i></div>
+                        <h5 class="fw-semibold">Secure Medical Records</h5>
+                        <p class="text-muted small">Your health data is protected with role-based access, encryption, and audit logging.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card text-center p-4 h-100">
+                        <div class="feature-icon bg-info-soft mb-3"><i class="bi bi-people text-info"></i></div>
+                        <h5 class="fw-semibold">Doctor–Patient Coordination</h5>
+                        <p class="text-muted small">Streamline communication between patients and doctors with structured workflows.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card text-center p-4 h-100">
+                        <div class="feature-icon bg-warning-soft mb-3"><i class="bi bi-bell text-warning"></i></div>
+                        <h5 class="fw-semibold">Real-Time Notifications</h5>
+                        <p class="text-muted small">Stay informed with in-app and AWS SNS-powered notifications for every important event.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card text-center p-4 h-100">
+                        <div class="feature-icon bg-danger-soft mb-3"><i class="bi bi-cloud text-danger"></i></div>
+                        <h5 class="fw-semibold">Cloud-Powered Infrastructure</h5>
+                        <p class="text-muted small">Built on AWS — DynamoDB, EC2, SNS, CloudWatch, VPC — for enterprise-grade reliability.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card text-center p-4 h-100">
+                        <div class="feature-icon bg-purple-soft mb-3"><i class="bi bi-clipboard2-pulse text-purple"></i></div>
+                        <h5 class="fw-semibold">Report Management</h5>
+                        <p class="text-muted small">Upload, track, and share medical reports securely with your healthcare providers.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-5 bg-light" id="how-it-works">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold display-6">How It Works</h2>
+                <p class="text-muted">Get started in four simple steps</p>
+            </div>
+            <div class="row g-4 justify-content-center">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="step-card text-center p-4 h-100">
+                        <div class="step-number">1</div>
+                        <h6 class="fw-semibold mt-3">Create Account</h6>
+                        <p class="text-muted small mb-0">Register securely with your basic health information.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="step-card text-center p-4 h-100">
+                        <div class="step-number">2</div>
+                        <h6 class="fw-semibold mt-3">Find Doctor</h6>
+                        <p class="text-muted small mb-0">Search by specialty, location, and availability.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="step-card text-center p-4 h-100">
+                        <div class="step-number">3</div>
+                        <h6 class="fw-semibold mt-3">Book Appointment</h6>
+                        <p class="text-muted small mb-0">Select a convenient date and time slot.</p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="step-card text-center p-4 h-100">
+                        <div class="step-number">4</div>
+                        <h6 class="fw-semibold mt-3">Manage Records</h6>
+                        <p class="text-muted small mb-0">Track appointments, reports, and medical history.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Section -->
+    <section class="py-5 bg-white" id="security">
+        <div class="container py-4">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <h2 class="fw-bold display-6 mb-3">Built with Security First</h2>
+                    <p class="text-muted mb-4">MedTrack treats your healthcare data as highly sensitive. Every interaction is protected by multiple layers of security.</p>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="security-icon"><i class="bi bi-lock-fill text-primary"></i></div>
+                            <div><h6 class="fw-semibold mb-1">Secure Authentication</h6><p class="text-muted small mb-0">Password hashing, session management, CSRF protection, and rate limiting.</p></div>
+                        </div>
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="security-icon"><i class="bi bi-person-lock text-primary"></i></div>
+                            <div><h6 class="fw-semibold mb-1">Role-Based Access Control</h6><p class="text-muted small mb-0">Patients, doctors, and admins each see only what they're authorized to access.</p></div>
+                        </div>
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="security-icon"><i class="bi bi-cloud-check-fill text-primary"></i></div>
+                            <div><h6 class="fw-semibold mb-1">AWS Cloud Infrastructure</h6><p class="text-muted small mb-0">VPC-protected deployment with IAM least-privilege roles and CloudWatch monitoring.</p></div>
+                        </div>
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="security-icon"><i class="bi bi-journal-check text-primary"></i></div>
+                            <div><h6 class="fw-semibold mb-1">Comprehensive Audit Logging</h6><p class="text-muted small mb-0">Every security-sensitive action is logged for compliance and accountability.</p></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div class="security-visual p-5">
+                        <i class="bi bi-shield-fill-check display-1 text-primary opacity-25"></i>
+                        <div class="mt-3">
+                            <span class="badge bg-primary-soft text-primary me-1">AES-256</span>
+                            <span class="badge bg-success-soft text-success me-1">HTTPS</span>
+                            <span class="badge bg-info-soft text-info me-1">IAM Roles</span>
+                            <span class="badge bg-warning-soft text-warning">Audit Logs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-5 cta-section">
+        <div class="container text-center py-4">
+            <h2 class="fw-bold text-white display-6 mb-3">Ready to Get Started?</h2>
+            <p class="text-white-50 mb-4 mx-auto" style="max-width: 500px;">Join MedTrack today and experience modern, secure healthcare management.</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg px-5 fw-semibold">Create Free Account</a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg px-5">Sign In</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-4 bg-dark text-white-50">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0 small"><i class="bi bi-heart-pulse-fill text-primary me-1"></i> MedTrack Healthcare Platform</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0 small">MedTrack helps manage healthcare information and appointments. It does not replace professional medical advice.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('landing-nav');
+            nav.classList.toggle('scrolled', window.scrollY > 50);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,652 @@
+{
+  "users": {
+    "admin_demo": {
+      "id": "admin_demo",
+      "email": "admin@medtrack.demo",
+      "password_hash": "scrypt:32768:8:1$2o24apEmZ0YMpl0N$5443a6ef795c6cc906cd0874341a7857a0b691193564653e6771fa2f5a2754b4a525ab27176b0020ee67b993e2e52876a385f658eb9201c1cd2060e3ae75af21",
+      "role": "admin",
+      "name": "MedTrack Administrator",
+      "status": "active",
+      "created_at": "2026-09-29T16:31:24.927460+00:00",
+      "updated_at": "2026-09-29T16:31:24.927481+00:00"
+    },
+    "user_aarav": {
+      "id": "user_aarav",
+      "email": "aarav@medtrack.demo",
+      "password_hash": "scrypt:32768:8:1$IdJAMJidSWTXX1QK$38d317bdebc47e74006490bef77eae950410acbcb11d8a6db7360aa5272ad2a69c727e07bc9c5d021101c319b8700b165efc44de3a33d1b0d828742a50d7036e",
+      "role": "patient",
+      "name": "Aarav Sharma",
+      "status": "active",
+      "created_at": "2026-09-29T16:31:25.048148+00:00",
+      "updated_at": "2026-09-29T16:31:25.048174+00:00",
+      "patient_id": "pat_aarav"
+    },
+    "user_ananya": {
+      "id": "user_ananya",
+      "email": "ananya@medtrack.demo",
+      "password_hash": "scrypt:32768:8:1$nHdLAElGC7bnRpTC$4f920b54c5763ffc82fed1601f57e1fe5514b7bfe60d6872e4a0e1e7c7451e6ee9168ff5eb1b8e1373af945639fbf3b6b4a38d76686b52451ec57a59d28f0339",
+      "role": "patient",
+      "name": "Ananya Patil",
+      "status": "active",
+      "created_at": "2026-09-29T16:31:25.164772+00:00",
+      "updated_at": "2026-09-29T16:31:25.164789+00:00",
+      "patient_id": "pat_ananya"
+    },
+    "doctor_rohan": {
+      "id": "doctor_rohan",
+      "email": "rohan@medtrack.demo",
+      "password_hash": "scrypt:32768:8:1$hqRks9whCLr7oRaM$2cd63827adb5e314a4bb96b825e3d5a82cea9c6b7e7ec182eb7af60465553c6028aaef40ebc685ef5033696622cd8f50da67f391ff464f00e2dcc7c6e67d1886",
+      "role": "doctor",
+      "name": "Dr. Rohan Mehta",
+      "status": "active",
+      "created_at": "2026-09-29T16:31:25.282566+00:00",
+      "updated_at": "2026-09-29T16:31:25.282582+00:00",
+      "doctor_id": "dr_rohan"
+    },
+    "doctor_priya": {
+      "id": "doctor_priya",
+      "email": "priya@medtrack.demo",
+      "password_hash": "scrypt:32768:8:1$bFxXWToXs4oGEr5L$02647937da764d880100834f42eff707afabca327d8587ec11ef8bdf4f6495594308675c8392bc069d4d596916d7c75048fe76f4aec76cd8bbfc31bf0dd97aa8",
+      "role": "doctor",
+      "name": "Dr. Priya Kulkarni",
+      "status": "active",
+      "created_at": "2026-09-29T16:31:25.392928+00:00",
+      "updated_at": "2026-09-29T16:31:25.392949+00:00",
+      "doctor_id": "dr_priya"
+    },
+    "doctor_aditya": {
+      "id": "doctor_aditya",
+      "email": "aditya@medtrack.demo",
+      "password_hash": "scrypt:32768:8:1$FJhkGYOtktfbwih1$eaa5854b8901711302de08f433d63094392c7282f094b009d21a24e4d4a1eb5e27a10420a7c54b3af1c3e8ae6281f9ffd298243379b792345b8de308562b8563",
+      "role": "doctor",
+      "name": "Dr. Aditya Shah",
+      "status": "active",
+      "created_at": "2026-09-29T16:31:25.504657+00:00",
+      "updated_at": "2026-09-29T16:31:25.504675+00:00",
+      "doctor_id": "dr_aditya"
+    },
+    "usr_sachin": {
+      "id": "usr_sachin",
+      "email": "sachin123@gmail.com",
+      "password_hash": "scrypt:32768:8:1$ImzYYi4m1Piv5T6k$b88fa1d4d57325f48c56befbde79fd0fc62918ce5d0d2189d462b899fffdbaa9b9283c383b6e0935d6b9ca0e53c8a5b78769375a7bcfe92de2f4f285404cd12d",
+      "role": "doctor",
+      "name": "Dr. Sachin Patil",
+      "status": "active",
+      "created_at": "2026-09-29T16:31:25.613433+00:00",
+      "updated_at": "2026-09-29T16:32:36.124910+00:00",
+      "doctor_id": "dr_sachin"
+    },
+    "usr_f70c4615f5d6": {
+      "id": "usr_f70c4615f5d6",
+      "email": "parth345@gmail.com",
+      "password_hash": "scrypt:32768:8:1$dHSWAY81lZalWLwW$19b975915ce01fee04586d4ec0aa5c2cd39bf0a08dcc8ae8a2af1131760507e3810e489ede29ed446a78632b9398a21ca6d6b05b617c050e4d50e6c77445cc7e",
+      "role": "doctor",
+      "name": "Dr. Parth Nerkar",
+      "doctor_id": "dr_ff1f3526f042",
+      "status": "active",
+      "created_at": "2026-09-29T16:38:50.281900+00:00",
+      "updated_at": "2026-09-29T16:39:01.185431+00:00"
+    },
+    "usr_36d71825fbfa": {
+      "id": "usr_36d71825fbfa",
+      "email": "rajendra123@gmail.com",
+      "password_hash": "scrypt:32768:8:1$tqIBOLEG18bK8lva$c336e6f83c2f71b65b6db1eb90730de71a1de5fe8cdff5f6e2a6722f9d23413c10dd9a794ce848331b98516e9f1c75781fd0596cd16749d19dc05ed232a1da47",
+      "role": "patient",
+      "name": "Rajendra Patil",
+      "patient_id": "pat_7f28ac4615de",
+      "status": "active",
+      "created_at": "2026-09-29T16:40:43.015046+00:00",
+      "updated_at": "2026-09-29T16:40:43.015046+00:00"
+    }
+  },
+  "patients": {
+    "pat_aarav": {
+      "id": "pat_aarav",
+      "user_id": "user_aarav",
+      "name": "Aarav Sharma",
+      "dob": "1996-05-17",
+      "gender": "Male",
+      "phone": "+91 98765 43210",
+      "address": "Pune, Maharashtra",
+      "emergency_contact": "Meera Sharma \u00b7 +91 98765 00112",
+      "created_at": "2026-09-29T16:31:25.164795+00:00"
+    },
+    "pat_ananya": {
+      "id": "pat_ananya",
+      "user_id": "user_ananya",
+      "name": "Ananya Patil",
+      "dob": "1993-11-02",
+      "gender": "Female",
+      "phone": "+91 98765 88776",
+      "address": "Mumbai, Maharashtra",
+      "emergency_contact": "Ravi Patil \u00b7 +91 98765 11223",
+      "created_at": "2026-09-29T16:31:25.164799+00:00"
+    },
+    "pat_7f28ac4615de": {
+      "id": "pat_7f28ac4615de",
+      "user_id": "usr_36d71825fbfa",
+      "name": "Rajendra Patil",
+      "dob": "2026-09-22",
+      "gender": "male",
+      "phone": "+917412589630",
+      "address": "Khadki,Pune",
+      "emergency_contact": "+917412589630",
+      "created_at": "2026-09-29T16:40:43.015046+00:00",
+      "updated_at": "2026-09-29T16:40:43.015046+00:00"
+    }
+  },
+  "doctors": {
+    "dr_rohan": {
+      "id": "dr_rohan",
+      "user_id": "doctor_rohan",
+      "name": "Dr. Rohan Mehta",
+      "email": "rohan@medtrack.demo",
+      "specialization": "General Physician",
+      "qualification": "MBBS, MD",
+      "experience": 12,
+      "clinic": "CityCare Clinic, Pune",
+      "consultation_mode": "In-person & Video",
+      "fee": 600,
+      "location": "Pune",
+      "phone": "+91 90000 00000",
+      "available_days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "time_slots": [
+        "09:00",
+        "10:00",
+        "11:00",
+        "14:00",
+        "15:00",
+        "16:00"
+      ],
+      "verification_status": "Verified",
+      "photo": "",
+      "bio": "Demo clinician profile for MedTrack demonstrations only.",
+      "created_at": "2026-09-29T16:31:25.282592+00:00",
+      "updated_at": "2026-09-29T16:31:25.282594+00:00"
+    },
+    "dr_priya": {
+      "id": "dr_priya",
+      "user_id": "doctor_priya",
+      "name": "Dr. Priya Kulkarni",
+      "email": "priya@medtrack.demo",
+      "specialization": "Dermatologist",
+      "qualification": "MBBS, MD Dermatology",
+      "experience": 9,
+      "clinic": "SkinWell Centre, Mumbai",
+      "consultation_mode": "In-person & Video",
+      "fee": 750,
+      "location": "Mumbai",
+      "phone": "+91 90000 00000",
+      "available_days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "time_slots": [
+        "09:00",
+        "10:00",
+        "11:00",
+        "14:00",
+        "15:00",
+        "16:00"
+      ],
+      "verification_status": "Verified",
+      "photo": "",
+      "bio": "Demo clinician profile for MedTrack demonstrations only.",
+      "created_at": "2026-09-29T16:31:25.392962+00:00",
+      "updated_at": "2026-09-29T16:31:25.392964+00:00"
+    },
+    "dr_aditya": {
+      "id": "dr_aditya",
+      "user_id": "doctor_aditya",
+      "name": "Dr. Aditya Shah",
+      "email": "aditya@medtrack.demo",
+      "specialization": "Cardiologist",
+      "qualification": "MBBS, DM Cardiology",
+      "experience": 15,
+      "clinic": "HeartFirst Hospital, Pune",
+      "consultation_mode": "In-person",
+      "fee": 1000,
+      "location": "Pune",
+      "phone": "+91 90000 00000",
+      "available_days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "time_slots": [
+        "09:00",
+        "10:00",
+        "11:00",
+        "14:00",
+        "15:00",
+        "16:00"
+      ],
+      "verification_status": "Verified",
+      "photo": "",
+      "bio": "Demo clinician profile for MedTrack demonstrations only.",
+      "created_at": "2026-09-29T16:31:25.504692+00:00",
+      "updated_at": "2026-09-29T16:31:25.504693+00:00"
+    },
+    "dr_sachin": {
+      "id": "dr_sachin",
+      "user_id": "usr_sachin",
+      "name": "Dr. Sachin Patil",
+      "email": "sachin123@gmail.com",
+      "specialization": "Ophthalmologist",
+      "qualification": "MBBS,MS",
+      "experience": 5,
+      "clinic": "CityCare Clinic, Pune",
+      "consultation_mode": "In-person",
+      "fee": 600,
+      "location": "Mumbai",
+      "phone": "9632587410",
+      "available_days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "time_slots": [
+        "09:00",
+        "10:00",
+        "11:00",
+        "14:00",
+        "15:00",
+        "16:00"
+      ],
+      "verification_status": "Verified",
+      "photo": "",
+      "bio": "Clinician profile registered on MedTrack.",
+      "created_at": "2026-09-29T16:31:25.613494+00:00",
+      "updated_at": "2026-09-29T16:32:36.124926+00:00"
+    },
+    "dr_ff1f3526f042": {
+      "id": "dr_ff1f3526f042",
+      "user_id": "usr_f70c4615f5d6",
+      "name": "Dr. Parth Nerkar",
+      "email": "parth345@gmail.com",
+      "specialization": "Cardiologist",
+      "qualification": "MBBS,MS",
+      "experience": 5,
+      "clinic": "Parth Hospital , Shivajinagar ,Pune",
+      "consultation_mode": "in-person",
+      "fee": 700,
+      "location": "Pune",
+      "phone": "",
+      "available_days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "time_slots": [
+        "09:00",
+        "10:00",
+        "11:00",
+        "14:00",
+        "15:00",
+        "16:00"
+      ],
+      "verification_status": "Verified",
+      "photo": "",
+      "bio": "Cardiologist With 5+years Experience",
+      "created_at": "2026-09-29T16:38:50.281900+00:00",
+      "updated_at": "2026-09-29T16:51:47.134997+00:00"
+    }
+  },
+  "appointments": {
+    "apt_90b2e04354a5": {
+      "id": "apt_90b2e04354a5",
+      "patient_id": "pat_aarav",
+      "doctor_id": "dr_rohan",
+      "date": "2026-09-30",
+      "time": "10:00",
+      "time_slot": "10:00",
+      "reason": "Annual wellness consultation",
+      "mode": "In-person",
+      "consultation_mode": "In-person",
+      "status": "confirmed",
+      "created_at": "2026-09-29T16:31:25.613657+00:00",
+      "updated_at": "2026-09-29T16:31:25.613663+00:00"
+    },
+    "apt_5d21f394af5d": {
+      "id": "apt_5d21f394af5d",
+      "patient_id": "pat_aarav",
+      "doctor_id": "dr_priya",
+      "date": "2026-09-15",
+      "time": "11:00",
+      "time_slot": "11:00",
+      "reason": "Follow-up consultation",
+      "mode": "Video",
+      "consultation_mode": "Video",
+      "status": "completed",
+      "created_at": "2026-09-29T16:31:25.613700+00:00",
+      "updated_at": "2026-09-29T16:31:25.613705+00:00"
+    },
+    "apt_382f15e32de8": {
+      "id": "apt_382f15e32de8",
+      "patient_id": "pat_7f28ac4615de",
+      "doctor_id": "dr_ff1f3526f042",
+      "date": "2026-09-30",
+      "time": "11:00",
+      "time_slot": "11:00",
+      "reason": "heart Pain",
+      "mode": "In-person",
+      "consultation_mode": "In-person",
+      "status": "completed",
+      "created_at": "2026-09-29T16:41:13.955465+00:00",
+      "updated_at": "2026-09-29T16:59:57.900760+00:00"
+    }
+  },
+  "records": {
+    "rec_cb936dfe0ad1": {
+      "id": "rec_cb936dfe0ad1",
+      "patient_id": "pat_aarav",
+      "doctor_id": "dr_priya",
+      "appointment_id": "apt_5d21f394af5d",
+      "record_date": "2026-09-29",
+      "clinical_notes": "Routine consultation completed. Please discuss any new symptoms with your clinician.",
+      "treatment_notes": "General care plan discussed.",
+      "follow_up": "Follow up as advised by your clinician.",
+      "created_at": "2026-09-29T16:31:25.613729+00:00",
+      "updated_at": "2026-09-29T16:31:25.613733+00:00"
+    }
+  },
+  "reports": {},
+  "notifications": {
+    "ntf_dd670bdf53f1": {
+      "id": "ntf_dd670bdf53f1",
+      "user_id": "user_aarav",
+      "type": "appointment_confirmed",
+      "title": "Appointment confirmed",
+      "message": "Your appointment with Dr. Rohan Mehta is confirmed for 2026-09-30 at 10:00.",
+      "read": false,
+      "created_at": "2026-09-29T16:31:25.618418+00:00"
+    },
+    "ntf_8725756bfab8": {
+      "id": "ntf_8725756bfab8",
+      "user_id": "usr_sachin",
+      "type": "doctor_account_approved",
+      "title": "Doctor Account Approved!",
+      "message": "Congratulations Dr. Sachin Patil! Your medical credentials have been verified and your MedTrack doctor portal is now active.",
+      "read": false,
+      "created_at": "2026-09-29T16:32:36.137172+00:00"
+    },
+    "ntf_c98e61ce0c35": {
+      "id": "ntf_c98e61ce0c35",
+      "user_id": "admin_demo",
+      "type": "doctor_registration_pending",
+      "title": "New Doctor Registration Awaiting Approval",
+      "message": "Dr. Parth Nerkar (Cardiologist, Parth Hospital , Shivajinagar ,Pune) has registered and is awaiting your review and approval.",
+      "read": true,
+      "created_at": "2026-09-29T16:38:50.293515+00:00"
+    },
+    "ntf_615301705488": {
+      "id": "ntf_615301705488",
+      "user_id": "usr_f70c4615f5d6",
+      "type": "doctor_account_approved",
+      "title": "Doctor Account Approved!",
+      "message": "Congratulations Dr. Parth Nerkar! Your medical credentials have been verified and your MedTrack doctor portal is now active.",
+      "read": true,
+      "created_at": "2026-09-29T16:39:01.215277+00:00"
+    },
+    "ntf_3811e5aa9dc9": {
+      "id": "ntf_3811e5aa9dc9",
+      "user_id": "usr_f70c4615f5d6",
+      "type": "appointment_requested",
+      "title": "New Appointment Request",
+      "message": "Rajendra Patil has requested an appointment on 2026-09-30 at 11:00.",
+      "read": true,
+      "created_at": "2026-09-29T16:41:13.964930+00:00"
+    },
+    "ntf_33861d64dba1": {
+      "id": "ntf_33861d64dba1",
+      "user_id": "usr_36d71825fbfa",
+      "type": "appointment_confirmed",
+      "title": "Appointment Confirmed",
+      "message": "Your appointment with Dr. Parth Nerkar on 2026-09-30 at 11:00 has been confirmed.",
+      "read": true,
+      "created_at": "2026-09-29T16:42:15.383594+00:00"
+    },
+    "ntf_470e0b0a060d": {
+      "id": "ntf_470e0b0a060d",
+      "user_id": "usr_36d71825fbfa",
+      "type": "appointment_completed",
+      "title": "Consultation Complete",
+      "message": "Your consultation on 2026-09-30 has been completed. Check your medical records for updates.",
+      "read": true,
+      "created_at": "2026-09-29T16:59:57.914021+00:00"
+    }
+  },
+  "audit_logs": [
+    {
+      "id": "aud_83aff4cd78ff",
+      "actor_id": "admin_demo",
+      "action": "login",
+      "resource_type": "user",
+      "resource_id": "admin_demo",
+      "timestamp": "2026-09-29T16:32:02.230319+00:00"
+    },
+    {
+      "id": "aud_c2d7076e05fc",
+      "actor_id": "admin_demo",
+      "action": "login",
+      "resource_type": "user",
+      "resource_id": "admin_demo",
+      "timestamp": "2026-09-29T16:32:36.051236+00:00"
+    },
+    {
+      "id": "aud_3b29f77ad41a",
+      "actor_id": "admin_demo",
+      "action": "doctor_approved",
+      "resource_type": "doctor",
+      "resource_id": "dr_sachin",
+      "timestamp": "2026-09-29T16:32:36.124969+00:00"
+    },
+    {
+      "id": "aud_ee6d47f29430",
+      "actor_id": "usr_sachin",
+      "action": "login",
+      "resource_type": "user",
+      "resource_id": "usr_sachin",
+      "timestamp": "2026-09-29T16:32:36.381746+00:00"
+    },
+    {
+      "id": "aud_d0e28832bd9b",
+      "actor_id": "admin_demo",
+      "action": "login",
+      "resource_type": "user",
+      "resource_id": "admin_demo",
+      "timestamp": "2026-09-29T16:33:34.561138+00:00"
+    },
+    {
+      "id": "aud_1438fe028516",
+      "actor_id": "admin_demo",
+      "action": "logout",
+      "resource_type": "user",
+      "resource_id": "admin_demo",
+      "timestamp": "2026-09-29T16:36:52.442132+00:00"
+    },
+    {
+      "id": "aud_3c7ec1f484ae",
+      "actor_id": "parth345@gmail.com",
+      "action": "login_failed",
+      "resource_type": "auth",
+      "resource_id": "parth345@gmail.com",
+      "timestamp": "2026-09-29T16:37:09.565861+00:00"
+    },
+    {
+      "id": "aud_4f6cdd8f27b6",
+      "actor_id": "parth345@gmail.com",
+      "action": "login_failed",
+      "resource_type": "auth",
+      "resource_id": "parth345@gmail.com",
+      "timestamp": "2026-09-29T16:37:31.663291+00:00"
+    },
+    {
+      "id": "aud_d30826f63c8d",
+      "actor_id": "usr_f70c4615f5d6",
+      "action": "doctor_registered_pending",
+      "resource_type": "user",
+      "resource_id": "usr_f70c4615f5d6",
+      "timestamp": "2026-09-29T16:38:50.287351+00:00"
+    },
+    {
+      "id": "aud_c07b1a43667e",
+      "actor_id": "admin_demo",
+      "action": "login",
+      "resource_type": "user",
+      "resource_id": "admin_demo",
+      "timestamp": "2026-09-29T16:38:56.736531+00:00"
+    },
+    {
+      "id": "aud_7b8cabfe300d",
+      "actor_id": "admin_demo",
+      "action": "doctor_approved",
+      "resource_type": "doctor",
+      "resource_id": "dr_ff1f3526f042",
+      "timestamp": "2026-09-29T16:39:01.185568+00:00"
+    },
+    {
+      "id": "aud_275453f7dc92",
+      "actor_id": "admin_demo",
+      "action": "logout",
+      "resource_type": "user",
+      "resource_id": "admin_demo",
+      "timestamp": "2026-09-29T16:39:17.498285+00:00"
+    },
+    {
+      "id": "aud_05ea31570b3d",
+      "actor_id": "usr_36d71825fbfa",
+      "action": "register",
+      "resource_type": "user",
+      "resource_id": "usr_36d71825fbfa",
+      "timestamp": "2026-09-29T16:40:43.024465+00:00"
+    },
+    {
+      "id": "aud_31860f586509",
+      "actor_id": "usr_36d71825fbfa",
+      "action": "appointment_created",
+      "resource_type": "appointment",
+      "resource_id": "apt_382f15e32de8",
+      "timestamp": "2026-09-29T16:41:13.960315+00:00"
+    },
+    {
+      "id": "aud_9d4d246839b8",
+      "actor_id": "usr_36d71825fbfa",
+      "action": "logout",
+      "resource_type": "user",
+      "resource_id": "usr_36d71825fbfa",
+      "timestamp": "2026-09-29T16:41:53.447085+00:00"
+    },
+    {
+      "id": "aud_29ad6c75ff22",
+      "actor_id": "usr_f70c4615f5d6",
+      "action": "login",
+      "resource_type": "user",
+      "resource_id": "usr_f70c4615f5d6",
+      "timestamp": "2026-09-29T16:42:11.110860+00:00"
+    },
+    {
+      "id": "aud_64e54b2c0613",
+      "actor_id": "usr_f70c4615f5d6",
+      "action": "appointment_confirmed",
+      "resource_type": "appointment",
+      "resource_id": "apt_382f15e32de8",
+      "timestamp": "2026-09-29T16:42:15.375615+00:00"
+    },
+    {
+      "id": "aud_4f91b17a9199",
+      "actor_id": "usr_f70c4615f5d6",
+      "action": "logout",
+      "resource_type": "user",
+      "resource_id": "usr_f70c4615f5d6",
+      "timestamp": "2026-09-29T16:42:42.653169+00:00"
+    },
+    {
+      "id": "aud_48f3b363a30a",
+      "actor_id": "admin_demo",
+      "action": "login",
+      "resource_type": "user",
+      "resource_id": "admin_demo",
+      "timestamp": "2026-09-29T16:49:39.041592+00:00"
+    },
+    {
+      "id": "aud_7db6c879d655",
+      "actor_id": "parth123@gmail.com",
+      "action": "login_failed",
+      "resource_type": "auth",
+      "resource_id": "parth123@gmail.com",
+      "timestamp": "2026-09-29T16:50:35.313526+00:00"
+    },
+    {
+      "id": "aud_e78688455bf8",
+      "actor_id": "usr_f70c4615f5d6",
+      "action": "login",
+      "resource_type": "user",
+      "resource_id": "usr_f70c4615f5d6",
+      "timestamp": "2026-09-29T16:51:27.131274+00:00"
+    },
+    {
+      "id": "aud_155296e6c9f8",
+      "actor_id": "usr_f70c4615f5d6",
+      "action": "profile_updated",
+      "resource_type": "doctor",
+      "resource_id": "dr_ff1f3526f042",
+      "timestamp": "2026-09-29T16:51:47.143329+00:00"
+    },
+    {
+      "id": "aud_ba617c14fb44",
+      "actor_id": "doctor_rohan",
+      "action": "login",
+      "resource_type": "user",
+      "resource_id": "doctor_rohan",
+      "timestamp": "2026-09-29T16:55:43.292235+00:00"
+    },
+    {
+      "id": "aud_10c601c052ac",
+      "actor_id": "usr_f70c4615f5d6",
+      "action": "appointment_completed",
+      "resource_type": "appointment",
+      "resource_id": "apt_382f15e32de8",
+      "timestamp": "2026-09-29T16:59:57.906986+00:00"
+    },
+    {
+      "id": "aud_7de24493566d",
+      "actor_id": "usr_f70c4615f5d6",
+      "action": "logout",
+      "resource_type": "user",
+      "resource_id": "usr_f70c4615f5d6",
+      "timestamp": "2026-09-29T17:02:28.333521+00:00"
+    },
+    {
+      "id": "aud_10bf3623a70e",
+      "actor_id": "usr_36d71825fbfa",
+      "action": "login",
+      "resource_type": "user",
+      "resource_id": "usr_36d71825fbfa",
+      "timestamp": "2026-09-29T17:02:47.232786+00:00"
+    },
+    {
+      "id": "aud_9c011f761ed2",
+      "actor_id": "parth123@gmail.com",
+      "action": "login_failed",
+      "resource_type": "auth",
+      "resource_id": "parth123@gmail.com",
+      "timestamp": "2026-09-29T17:10:20.586573+00:00"
+    }
+  ]
+}

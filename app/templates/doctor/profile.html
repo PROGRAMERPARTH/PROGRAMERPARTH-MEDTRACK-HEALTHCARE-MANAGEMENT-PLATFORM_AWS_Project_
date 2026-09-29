@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Profile & Schedule{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom py-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="doctor-avatar bg-primary text-white">
+                        <i class="bi bi-person-badge-fill"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold">{{ doctor.name }}</h4>
+                        <span class="badge bg-primary-subtle text-primary">Doctor ID: {{ doctor.id }}</span>
+                        <span class="badge bg-success-subtle text-success ms-1">{{ doctor.verification_status|capitalize }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('doctor.profile') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                    <h6 class="fw-bold text-uppercase text-secondary mb-3 small">Professional Details</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="specialization" class="form-label fw-medium">Specialization</label>
+                            <input type="text" class="form-control" id="specialization" name="specialization" value="{{ doctor.specialization }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="qualification" class="form-label fw-medium">Qualification</label>
+                            <input type="text" class="form-control" id="qualification" name="qualification" value="{{ doctor.qualification }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="experience" class="form-label fw-medium">Experience (Years)</label>
+                            <input type="number" class="form-control" id="experience" name="experience" value="{{ doctor.experience_years }}" min="0" max="60" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="fee" class="form-label fw-medium">Consultation Fee (₹)</label>
+                            <input type="number" class="form-control" id="fee" name="fee" value="{{ doctor.consultation_fee }}" min="0" step="50" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="consultation_mode" class="form-label fw-medium">Consultation Mode</label>
+                            <select class="form-select" id="consultation_mode" name="consultation_mode" required>
+                                <option value="in-person" {% if doctor.consultation_mode == 'in-person' %}selected{% endif %}>In-person</option>
+                                <option value="video" {% if doctor.consultation_mode == 'video' %}selected{% endif %}>Video</option>
+                                <option value="both" {% if doctor.consultation_mode == 'both' %}selected{% endif %}>Both (In-person & Video)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="clinic" class="form-label fw-medium">Hospital / Clinic Name</label>
+                            <input type="text" class="form-control" id="clinic" name="clinic" value="{{ doctor.hospital }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="location" class="form-label fw-medium">Location / City</label>
+                            <input type="text" class="form-control" id="location" name="location" value="{{ doctor.location }}" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="bio" class="form-label fw-medium">Bio / Professional Summary</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="3">{{ doctor.bio }}</textarea>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold text-uppercase text-secondary mb-3 small">Availability & Schedule</h6>
+                    <div class="mb-4">
+                        <label class="form-label fw-medium d-block mb-2">Available Days</label>
+                        <div class="d-flex flex-wrap gap-3">
+                            {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="available_days" value="{{ day }}" id="day-{{ day }}"
+                                       {% if day in doctor.available_days %}checked{% endif %}>
+                                <label class="form-check-label" for="day-{{ day }}">{{ day }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="time_slots" class="form-label fw-medium">Time Slots (comma-separated)</label>
+                        <input type="text" class="form-control" id="time_slots" name="time_slots" value="{{ doctor.available_time_slots|join(', ') }}" placeholder="09:00 AM, 10:00 AM, 11:00 AM, 02:00 PM, 04:00 PM" required>
+                        <div class="form-text">Specify available consultation time windows separated by commas.</div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('doctor.dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-save me-1"></i> Update Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}System Administration Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h1 class="h3 fw-bold mb-1">MedTrack Administration Console</h1>
+        <p class="text-muted mb-0">Real-time system telemetry, user access control, and platform audit logs.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('admin.doctors', status='pending') }}" class="btn btn-outline-warning text-dark btn-sm position-relative">
+            <i class="bi bi-person-badge me-1"></i> Doctor Approvals
+            {% if stats.pending_doctors and stats.pending_doctors > 0 %}
+            <span class="badge bg-danger rounded-pill ms-1">{{ stats.pending_doctors }}</span>
+            {% endif %}
+        </a>
+        <a href="{{ url_for('admin.users') }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-people me-1"></i> Manage Users
+        </a>
+        <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-shield-check me-1"></i> Audit Trail
+        </a>
+    </div>
+</div>
+
+{% if stats.pending_doctors and stats.pending_doctors > 0 %}
+<!-- Pending Doctor Approvals Banner -->
+<div class="alert alert-warning border-warning d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm">
+    <div class="d-flex align-items-center gap-3">
+        <i class="bi bi-exclamation-triangle-fill fs-3 text-warning"></i>
+        <div>
+            <h6 class="alert-heading fw-bold mb-0">{{ stats.pending_doctors }} Doctor Application{{ 's' if stats.pending_doctors > 1 else '' }} Awaiting Verification</h6>
+            <span class="small text-dark">New medical professionals have submitted registration credentials and require admin approval before their portal access is activated.</span>
+        </div>
+    </div>
+    <a href="{{ url_for('admin.doctors', status='pending') }}" class="btn btn-warning text-dark fw-bold btn-sm px-3 flex-shrink-0">
+        <i class="bi bi-check2-circle me-1"></i> Review Applications
+    </a>
+</div>
+{% endif %}
+
+<!-- KPI Metric Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-2">
+        <div class="card p-3 stat-card stat-info">
+            <span class="text-muted small fw-medium text-uppercase">Patients</span>
+            <h3 class="fw-bold mb-0 mt-1">{{ stats.patients }}</h3>
+        </div>
+    </div>
+    <div class="col-6 col-lg-2">
+        <div class="card p-3 stat-card stat-info">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small fw-medium text-uppercase">Doctors</span>
+                {% if stats.pending_doctors and stats.pending_doctors > 0 %}
+                <span class="badge bg-danger-subtle text-danger small">{{ stats.pending_doctors }} Pending</span>
+                {% endif %}
+            </div>
+            <h3 class="fw-bold mb-0 mt-1">{{ stats.doctors }}</h3>
+        </div>
+    </div>
+    <div class="col-6 col-lg-2">
+        <div class="card p-3 stat-card stat-success">
+            <span class="text-muted small fw-medium text-uppercase">Total Visits</span>
+            <h3 class="fw-bold mb-0 mt-1">{{ stats.appointments }}</h3>
+        </div>
+    </div>
+    <div class="col-6 col-lg-2">
+        <div class="card p-3 stat-card stat-warning">
+            <span class="text-muted small fw-medium text-uppercase">Today's Visits</span>
+            <h3 class="fw-bold mb-0 mt-1">{{ stats.appointments_today }}</h3>
+        </div>
+    </div>
+    <div class="col-6 col-lg-2">
+        <div class="card p-3 stat-card stat-info">
+            <span class="text-muted small fw-medium text-uppercase">Reports</span>
+            <h3 class="fw-bold mb-0 mt-1">{{ stats.reports }}</h3>
+        </div>
+    </div>
+    <div class="col-6 col-lg-2">
+        <div class="card p-3 stat-card stat-danger">
+            <span class="text-muted small fw-medium text-uppercase">Audit Logs</span>
+            <h3 class="fw-bold mb-0 mt-1">{{ stats.audit_events }}</h3>
+        </div>
+    </div>
+</div>
+
+<!-- System Status & Recent Activity -->
+<div class="row g-4 mb-4">
+    <!-- Cloud Architecture Status Banner -->
+    <div class="col-12">
+        <div class="card border-0 bg-primary-subtle text-primary p-3">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-cloud-check-fill fs-2"></i>
+                    <div>
+                        <strong class="d-block">AWS Cloud Infrastructure Mode: Simulated Local / DynamoDB Active</strong>
+                        <span class="small text-dark">Boto3 adapter connected • SNS Notification Pipeline Online • S3 File Adapter Ready</span>
+                    </div>
+                </div>
+                <span class="badge bg-success text-white px-3 py-2">System Healthy 100%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Platform Appointments -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold"><i class="bi bi-calendar-range text-primary me-2"></i>Recent Appointments</h6>
+                <a href="{{ url_for('admin.appointments') }}" class="small text-decoration-none">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appt in appointments[:8] %}
+                            <tr>
+                                <td class="font-monospace small text-primary">{{ appt.id }}</td>
+                                <td class="fw-semibold">{{ appt.patient_name }}</td>
+                                <td>{{ appt.doctor_name }}</td>
+                                <td class="small">{{ appt.date }}</td>
+                                <td><span class="badge-status badge-{{ appt.status }}">{{ appt.status }}</span></td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="5" class="text-center py-4 text-muted">No appointments recorded yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Log Preview -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold"><i class="bi bi-shield-shaded text-danger me-2"></i>Security Audit Events</h6>
+                <a href="{{ url_for('admin.audit_logs') }}" class="small text-decoration-none">Full Audit Trail</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for log in audit[:6] %}
+                    <div class="list-group-item p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="badge bg-secondary font-monospace small">{{ log.action }}</span>
+                            <span class="text-muted small">{{ log.timestamp[11:19] if log.timestamp|length >= 19 else log.timestamp }}</span>
+                        </div>
+                        <div class="text-muted small">
+                            <strong>Actor:</strong> {{ log.actor_id }} • <strong>Resource:</strong> {{ log.resource_type }}/{{ log.resource_id }}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="p-4 text-center text-muted">No audit events logged.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

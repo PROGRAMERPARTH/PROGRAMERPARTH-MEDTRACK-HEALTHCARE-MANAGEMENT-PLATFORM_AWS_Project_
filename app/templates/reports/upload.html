@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Diagnostic Report{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="mb-3">
+            <a href="{{ url_for('reports.list_reports') }}" class="text-decoration-none text-muted small">
+                <i class="bi bi-arrow-left me-1"></i> Back to Reports
+            </a>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 border-bottom">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="doctor-avatar bg-primary text-white">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold">Upload Diagnostic Document</h4>
+                        <p class="text-muted small mb-0">Upload lab investigations, radiology scans, or physician prescriptions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                <div class="health-disclaimer mb-4">
+                    <i class="bi bi-info-circle-fill me-1"></i> <strong>Healthcare notice:</strong> Upload only documents relevant to your consultation. Accepted file formats: <strong>PDF, PNG, JPG</strong> (Max 16MB).
+                </div>
+
+                <form method="POST" action="{{ url_for('reports.upload') }}" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label for="title" class="form-label fw-medium">Report Title</label>
+                            <input type="text" class="form-control" id="title" name="title" placeholder="e.g. Complete Blood Count (CBC), Chest X-Ray" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="report_type" class="form-label fw-medium">Report Type</label>
+                            <select class="form-select" id="report_type" name="report_type" required>
+                                <option value="" selected disabled>Select report category</option>
+                                <option value="Blood Test">Blood Test / Pathology</option>
+                                <option value="X-Ray">X-Ray Imaging</option>
+                                <option value="MRI">MRI Scan</option>
+                                <option value="CT Scan">CT Scan</option>
+                                <option value="Ultrasound">Ultrasound / Sonography</option>
+                                <option value="Prescription">Previous Prescription</option>
+                                <option value="Discharge Summary">Discharge Summary</option>
+                                <option value="Other">Other Medical Document</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="report_date" class="form-label fw-medium">Report Test Date</label>
+                            <input type="date" class="form-control" id="report_date" name="report_date" required>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="appointment_id" class="form-label fw-medium">Link to Appointment (Optional)</label>
+                            <select class="form-select" id="appointment_id" name="appointment_id">
+                                <option value="">None (Independent Document)</option>
+                                {% for appt in appointments %}
+                                <option value="{{ appt.id }}">{{ appt.date }} with {{ appt.doctor_name }} ({{ appt.time_slot }})</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text small">Linking alerts the specific doctor for that consultation.</div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="description" class="form-label fw-medium">Notes / Physician Comments</label>
+                            <textarea class="form-control" id="description" name="description" rows="2" placeholder="e.g. Fasting blood sugar level test performed at SRL Diagnostics"></textarea>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="report_file" class="form-label fw-medium">Select Medical File</label>
+                            <input class="form-control" type="file" id="report_file" name="report_file" accept=".pdf,.png,.jpg,.jpeg" required>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                        <a href="{{ url_for('reports.list_reports') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-upload me-1"></i> Upload & Save Document
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

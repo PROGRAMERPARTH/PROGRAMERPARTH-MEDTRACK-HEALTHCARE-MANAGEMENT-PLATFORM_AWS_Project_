@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Doctor Portal — {{ doctor.name if doctor else current_user.name }}</h1>
+        <p class="text-muted mb-0">{{ doctor.specialization if doctor else 'Specialist' }} • {{ doctor.hospital if doctor else 'Healthcare Center' }}</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('doctor.appointments') }}" class="btn btn-primary">
+            <i class="bi bi-calendar-check me-1"></i> All Appointments
+        </a>
+        <a href="{{ url_for('doctor.profile') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-gear me-1"></i> Schedule & Profile
+        </a>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card p-3 stat-card stat-info">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small fw-medium text-uppercase">Today's Visits</span>
+                    <h3 class="fw-bold mb-0 mt-1">{{ stats.today }}</h3>
+                </div>
+                <div class="fs-2 text-primary opacity-50"><i class="bi bi-calendar-day"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card p-3 stat-card stat-warning">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small fw-medium text-uppercase">Pending Requests</span>
+                    <h3 class="fw-bold mb-0 mt-1">{{ stats.pending }}</h3>
+                </div>
+                <div class="fs-2 text-warning opacity-50"><i class="bi bi-clock-history"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card p-3 stat-card stat-success">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small fw-medium text-uppercase">Completed</span>
+                    <h3 class="fw-bold mb-0 mt-1">{{ stats.completed }}</h3>
+                </div>
+                <div class="fs-2 text-success opacity-50"><i class="bi bi-check2-circle"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card p-3 stat-card stat-info">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small fw-medium text-uppercase">Pending Reports</span>
+                    <h3 class="fw-bold mb-0 mt-1">{{ stats.reports_pending }}</h3>
+                </div>
+                <div class="fs-2 text-info opacity-50"><i class="bi bi-clipboard2-pulse"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Pending Requests Table -->
+    <div class="col-lg-7">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h6 class="mb-0 fw-bold"><i class="bi bi-hourglass-split text-warning me-2"></i>Pending Appointment Requests</h6>
+                <span class="badge bg-warning-subtle text-warning">{{ pending|length }} Pending</span>
+            </div>
+            <div class="card-body p-0">
+                {% if pending %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Date & Time</th>
+                                <th>Reason</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appt in pending %}
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">{{ appt.patient_name }}</div>
+                                    <a href="{{ url_for('doctor.patient_detail', patient_id=appt.patient_id) }}" class="small text-decoration-none">
+                                        View History
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="fw-medium">{{ appt.date }}</div>
+                                    <div class="text-muted small">{{ appt.time_slot }} ({{ appt.consultation_mode|capitalize }})</div>
+                                </td>
+                                <td>
+                                    <span class="text-muted small">{{ appt.reason[:40] }}{% if appt.reason|length > 40 %}...{% endif %}</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <form method="POST" action="{{ url_for('appointments.accept', appointment_id=appt.id) }}" class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                            <button type="submit" class="btn btn-sm btn-success" title="Confirm Appointment">
+                                                <i class="bi bi-check-lg"></i> Accept
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('appointments.reject', appointment_id=appt.id) }}" class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Decline Request" onclick="return confirm('Are you sure you want to decline this appointment request?')">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state py-5">
+                    <i class="bi bi-check2-all empty-state-icon text-success"></i>
+                    <h6 class="fw-semibold">No pending appointment requests</h6>
+                    <p class="text-muted small mb-0">All patient consultation requests have been addressed.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Schedule -->
+    <div class="col-lg-5">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h6 class="mb-0 fw-bold"><i class="bi bi-calendar-event text-primary me-2"></i>Today's Consultations</h6>
+                <span class="badge bg-primary-subtle text-primary">{{ today_appointments|length }} Visits</span>
+            </div>
+            <div class="card-body p-0">
+                {% if today_appointments %}
+                <div class="list-group list-group-flush">
+                    {% for appt in today_appointments %}
+                    <div class="list-group-item p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-bold">{{ appt.patient_name }}</span>
+                            <span class="badge bg-light text-dark border">{{ appt.time_slot }}</span>
+                        </div>
+                        <p class="text-muted small mb-2"><i class="bi bi-chat-left-text me-1"></i> {{ appt.reason }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge-status badge-{{ appt.status }}">{{ appt.status }}</span>
+                            <div class="d-flex gap-1">
+                                <a href="{{ url_for('records.create', appointment_id=appt.id) }}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil-square me-1"></i> Add Record
+                                </a>
+                                <form method="POST" action="{{ url_for('appointments.complete', appointment_id=appt.id) }}" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Mark Consultation Completed">
+                                        <i class="bi bi-check2"></i> Complete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state py-5">
+                    <i class="bi bi-calendar-check empty-state-icon"></i>
+                    <h6 class="fw-semibold">No visits scheduled for today</h6>
+                    <p class="text-muted small mb-0">Check upcoming appointments or manage your schedule.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

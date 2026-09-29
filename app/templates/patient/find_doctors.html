@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Find Doctors{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 fw-bold mb-1">Find & Book Top Doctors</h1>
+    <p class="text-muted mb-0">Search certified healthcare specialists and book instant consultations.</p>
+</div>
+
+<!-- Search & Filters -->
+<div class="card p-3 mb-4 shadow-sm border-0">
+    <form method="GET" action="{{ url_for('patient.find_doctors') }}" class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label small fw-semibold text-muted">Search by Doctor Name</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" name="q" class="form-control" placeholder="e.g. Rohan Mehta" value="{{ filters.q }}">
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold text-muted">Specialization</label>
+            <select name="specialization" class="form-select">
+                <option value="">All Specializations</option>
+                {% for spec in specializations %}
+                <option value="{{ spec }}" {% if filters.specialization == spec %}selected{% endif %}>{{ spec }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold text-muted">Consultation Mode</label>
+            <select name="consultation_mode" class="form-select">
+                <option value="">Any Mode</option>
+                <option value="in-person" {% if filters.consultation_mode == 'in-person' %}selected{% endif %}>In-Person</option>
+                <option value="video" {% if filters.consultation_mode == 'video' %}selected{% endif %}>Video Consultation</option>
+                <option value="both" {% if filters.consultation_mode == 'both' %}selected{% endif %}>Both (In-person & Video)</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end gap-2">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-funnel me-1"></i> Filter
+            </button>
+            <a href="{{ url_for('patient.find_doctors') }}" class="btn btn-outline-secondary" title="Reset Filters">
+                <i class="bi bi-arrow-counterclockwise"></i>
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Doctors Grid -->
+<div class="row g-4">
+    {% if doctors %}
+        {% for doc in doctors %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 doctor-card border-0 shadow-sm">
+                <div class="card-body d-flex flex-column p-4">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="doctor-avatar">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center gap-1">
+                                <h5 class="fw-bold mb-0">{{ doc.name }}</h5>
+                                {% if doc.verification_status == 'verified' %}
+                                <i class="bi bi-patch-check-fill text-primary" title="Verified Specialist"></i>
+                                {% endif %}
+                            </div>
+                            <span class="badge bg-primary-subtle text-primary mt-1">{{ doc.specialization }}</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 small text-muted">
+                        <div class="mb-1"><i class="bi bi-mortarboard me-2 text-secondary"></i> {{ doc.qualification }}</div>
+                        <div class="mb-1"><i class="bi bi-briefcase me-2 text-secondary"></i> {{ doc.experience_years }} years experience</div>
+                        <div class="mb-1"><i class="bi bi-hospital me-2 text-secondary"></i> {{ doc.hospital }} ({{ doc.location }})</div>
+                        <div><i class="bi bi-currency-rupee me-2 text-secondary"></i> ₹{{ doc.consultation_fee }} consultation fee</div>
+                    </div>
+
+                    <div class="mb-3 pt-2 border-top">
+                        <span class="small fw-semibold text-muted d-block mb-1">Available Days:</span>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for day in doc.available_days %}
+                            <span class="badge bg-light text-dark border">{{ day[:3] }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mt-auto d-flex gap-2 pt-2">
+                        <a href="{{ url_for('patient.doctor_profile', doctor_id=doc.id) }}" class="btn btn-outline-primary btn-sm flex-fill">
+                            View Profile
+                        </a>
+                        <a href="{{ url_for('appointments.book', doctor_id=doc.id) }}" class="btn btn-primary btn-sm flex-fill">
+                            <i class="bi bi-calendar-plus me-1"></i> Book Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="card text-center py-5 border-0">
+                <i class="bi bi-search text-muted display-4 mb-3 opacity-50"></i>
+                <h5 class="fw-bold">No doctors found matching your criteria</h5>
+                <p class="text-muted small">Try broadening your search query or removing filters.</p>
+                <div>
+                    <a href="{{ url_for('patient.find_doctors') }}" class="btn btn-outline-primary btn-sm">Clear All Filters</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

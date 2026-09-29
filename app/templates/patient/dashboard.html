@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Welcome back, {{ patient.name if patient else current_user.name }}!</h1>
+        <p class="text-muted mb-0">Here is a summary of your healthcare activities and upcoming consultations.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('patient.find_doctors') }}" class="btn btn-primary">
+            <i class="bi bi-calendar-plus me-1"></i> Book Appointment
+        </a>
+        <a href="{{ url_for('reports.upload') }}" class="btn btn-outline-primary">
+            <i class="bi bi-upload me-1"></i> Upload Report
+        </a>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card p-3 stat-card stat-info">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small fw-medium text-uppercase">Total Visits</span>
+                    <h3 class="fw-bold mb-0 mt-1">{{ stats.total_appointments }}</h3>
+                </div>
+                <div class="fs-2 text-primary opacity-50"><i class="bi bi-calendar-check"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card p-3 stat-card stat-warning">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small fw-medium text-uppercase">Upcoming</span>
+                    <h3 class="fw-bold mb-0 mt-1">{{ stats.pending }}</h3>
+                </div>
+                <div class="fs-2 text-warning opacity-50"><i class="bi bi-hourglass-split"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card p-3 stat-card stat-success">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small fw-medium text-uppercase">Completed</span>
+                    <h3 class="fw-bold mb-0 mt-1">{{ stats.completed }}</h3>
+                </div>
+                <div class="fs-2 text-success opacity-50"><i class="bi bi-check-circle"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card p-3 stat-card stat-info">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small fw-medium text-uppercase">Reports</span>
+                    <h3 class="fw-bold mb-0 mt-1">{{ stats.reports }}</h3>
+                </div>
+                <div class="fs-2 text-info opacity-50"><i class="bi bi-file-earmark-medical"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Next Appointment Card & Quick Actions -->
+    <div class="col-lg-5">
+        <!-- Next Appointment Highlight -->
+        <div class="card mb-4 border-primary shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <span class="fw-semibold"><i class="bi bi-clock-history me-1"></i> Next Appointment</span>
+                {% if next_appointment %}
+                <span class="badge bg-light text-primary">{{ next_appointment.status|capitalize }}</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if next_appointment %}
+                <h5 class="fw-bold text-primary mb-1">{{ next_appointment.doctor_name }}</h5>
+                <p class="text-muted small mb-3">{{ next_appointment.doctor_specialization }}</p>
+                
+                <div class="p-3 bg-light rounded-3 mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted"><i class="bi bi-calendar3 me-1"></i> Date:</span>
+                        <span class="fw-semibold">{{ next_appointment.date }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted"><i class="bi bi-clock me-1"></i> Time:</span>
+                        <span class="fw-semibold">{{ next_appointment.time_slot }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted"><i class="bi bi-camera-video me-1"></i> Mode:</span>
+                        <span class="fw-semibold">{{ next_appointment.consultation_mode|capitalize }}</span>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('appointments.detail', appointment_id=next_appointment.id) }}" class="btn btn-sm btn-outline-primary flex-grow-1">
+                        View Details
+                    </a>
+                    <a href="{{ url_for('appointments.detail', appointment_id=next_appointment.id) }}" class="btn btn-sm btn-outline-secondary">
+                        Reschedule
+                    </a>
+                </div>
+                {% else %}
+                <div class="empty-state py-4 text-center">
+                    <i class="bi bi-calendar2-x empty-state-icon"></i>
+                    <h6 class="fw-semibold mb-1">No upcoming appointments</h6>
+                    <p class="text-muted small mb-3">Book a consultation with one of our certified specialists.</p>
+                    <a href="{{ url_for('patient.find_doctors') }}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-search me-1"></i> Find a Doctor
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0 fw-semibold"><i class="bi bi-lightning-charge me-1 text-warning"></i> Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <a href="{{ url_for('patient.find_doctors') }}" class="btn btn-light w-100 p-3 text-start border h-100">
+                            <i class="bi bi-person-plus text-primary fs-4 d-block mb-1"></i>
+                            <div class="fw-semibold small">Find Doctor</div>
+                            <span class="text-muted" style="font-size: 0.75rem;">Browse specialists</span>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="{{ url_for('reports.upload') }}" class="btn btn-light w-100 p-3 text-start border h-100">
+                            <i class="bi bi-file-earmark-arrow-up text-success fs-4 d-block mb-1"></i>
+                            <div class="fw-semibold small">Upload Report</div>
+                            <span class="text-muted" style="font-size: 0.75rem;">Lab / Test results</span>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="{{ url_for('records.list_records') }}" class="btn btn-light w-100 p-3 text-start border h-100">
+                            <i class="bi bi-journal-medical text-info fs-4 d-block mb-1"></i>
+                            <div class="fw-semibold small">Medical History</div>
+                            <span class="text-muted" style="font-size: 0.75rem;">Diagnoses & notes</span>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="{{ url_for('patient.profile') }}" class="btn btn-light w-100 p-3 text-start border h-100">
+                            <i class="bi bi-person-gear text-secondary fs-4 d-block mb-1"></i>
+                            <div class="fw-semibold small">My Profile</div>
+                            <span class="text-muted" style="font-size: 0.75rem;">Personal details</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Appointments List -->
+    <div class="col-lg-7">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-semibold"><i class="bi bi-calendar-week me-1"></i> Upcoming Consultations</h6>
+                <a href="{{ url_for('appointments.list_appointments') }}" class="small text-decoration-none">View All</a>
+            </div>
+            <div class="card-body p-0">
+                {% if upcoming %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead>
+                            <tr>
+                                <th>Doctor</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appt in upcoming %}
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">{{ appt.doctor_name }}</div>
+                                    <div class="text-muted small">{{ appt.doctor_specialization }}</div>
+                                </td>
+                                <td>
+                                    <div class="fw-medium">{{ appt.date }}</div>
+                                    <div class="text-muted small">{{ appt.time_slot }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge-status badge-{{ appt.status }}">
+                                        {{ appt.status }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('appointments.detail', appointment_id=appt.id) }}" class="btn btn-sm btn-outline-primary">
+                                        Details
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-clipboard2-check empty-state-icon"></i>
+                    <h6 class="fw-semibold">No appointments scheduled</h6>
+                    <p class="text-muted small mb-3">Schedule your first appointment today.</p>
+                    <a href="{{ url_for('patient.find_doctors') }}" class="btn btn-primary btn-sm">Find Doctor</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

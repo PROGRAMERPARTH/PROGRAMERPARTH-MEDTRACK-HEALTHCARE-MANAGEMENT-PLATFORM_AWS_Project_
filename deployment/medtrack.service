@@ -1,0 +1,21 @@
+[Unit]
+Description=MedTrack Cloud Healthcare Gunicorn Application Service
+After=network.target
+
+[Service]
+Type=notify
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/var/www/medtrack
+Environment="PATH=/var/www/medtrack/venv/bin"
+EnvironmentFile=/var/www/medtrack/.env
+ExecStart=/var/www/medtrack/venv/bin/gunicorn -c gunicorn.conf.py "app:create_app()"
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=10
+PrivateTmp=true
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

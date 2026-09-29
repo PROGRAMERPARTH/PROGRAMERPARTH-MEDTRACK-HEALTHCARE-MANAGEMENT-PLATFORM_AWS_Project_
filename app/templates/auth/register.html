@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Account Registration — MedTrack{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper py-3">
+    <div class="auth-ambient-glow"></div>
+    <div class="col-12 col-md-10 col-lg-9 col-xl-8 mx-auto">
+        <div class="auth-card p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="brand-icon-badge">
+                    <i class="bi bi-person-plus-fill"></i>
+                </div>
+                <h1 class="h3 fw-bold mb-1">Create MedTrack Account</h1>
+                <p class="text-muted small mb-0">Select your account profile to register on the platform</p>
+            </div>
+
+                <!-- Registration Role Selection Tabs -->
+                <ul class="nav nav-pills nav-fill mb-4 p-1 bg-light rounded-3 border" id="registerTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link py-2 fw-semibold {% if active_tab != 'doctor' %}active{% endif %}" id="patient-tab" data-bs-toggle="pill" data-bs-target="#patient-pane" type="button" role="tab" aria-controls="patient-pane" aria-selected="{% if active_tab != 'doctor' %}true{% else %}false{% endif %}">
+                            <i class="bi bi-person me-2"></i>Register as Patient
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link py-2 fw-semibold {% if active_tab == 'doctor' %}active{% endif %}" id="doctor-tab" data-bs-toggle="pill" data-bs-target="#doctor-pane" type="button" role="tab" aria-controls="doctor-pane" aria-selected="{% if active_tab == 'doctor' %}true{% else %}false{% endif %}">
+                            <i class="bi bi-person-badge me-2"></i>Register as Doctor / Clinician
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="registerTabsContent">
+                    <!-- ============================================== -->
+                    <!-- TAB 1: PATIENT REGISTRATION -->
+                    <!-- ============================================== -->
+                    <div class="tab-pane fade {% if active_tab != 'doctor' %}show active{% endif %}" id="patient-pane" role="tabpanel" aria-labelledby="patient-tab" tabindex="0">
+                        <form method="POST" action="{{ url_for('auth.register') }}" id="patient-register-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <input type="hidden" name="role" value="patient">
+
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label for="p_name" class="form-label fw-medium">Full Name</label>
+                                    <input type="text" class="form-control" id="p_name" name="name" placeholder="e.g. Aarav Sharma" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="p_email" class="form-label fw-medium">Email Address</label>
+                                    <input type="email" class="form-control" id="p_email" name="email" placeholder="patient@example.com" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="p_phone" class="form-label fw-medium">Mobile Number</label>
+                                    <input type="tel" class="form-control" id="p_phone" name="phone" placeholder="+91 98765 43210" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="p_dob" class="form-label fw-medium">Date of Birth</label>
+                                    <input type="date" class="form-control" id="p_dob" name="dob" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="p_gender" class="form-label fw-medium">Gender</label>
+                                    <select class="form-select" id="p_gender" name="gender" required>
+                                        <option value="" selected disabled>Select gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                        <option value="prefer_not_to_say">Prefer not to say</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label for="p_address" class="form-label fw-medium">Residential Address</label>
+                                    <input type="text" class="form-control" id="p_address" name="address" placeholder="Flat / House No, Street, City" required>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label for="p_emergency_contact" class="form-label fw-medium">Emergency Contact (Name & Phone)</label>
+                                    <input type="text" class="form-control" id="p_emergency_contact" name="emergency_contact" placeholder="e.g. Meera Sharma (+91 98765 00000)" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="p_password" class="form-label fw-medium">Password</label>
+                                    <input type="password" class="form-control" id="p_password" name="password" placeholder="At least 8 characters" minlength="8" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="p_confirm_password" class="form-label fw-medium">Confirm Password</label>
+                                    <input type="password" class="form-control" id="p_confirm_password" name="confirm_password" placeholder="Re-enter password" minlength="8" required>
+                                </div>
+                            </div>
+
+                            <div class="form-check mt-3 mb-4">
+                                <input class="form-check-input" type="checkbox" id="p_terms" required>
+                                <label class="form-check-label small text-muted" for="p_terms">
+                                    I understand that MedTrack is a healthcare management platform and does not replace emergency medical care.
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+                                <i class="bi bi-person-check me-2"></i>Complete Patient Registration
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- ============================================== -->
+                    <!-- TAB 2: DOCTOR REGISTRATION -->
+                    <!-- ============================================== -->
+                    <div class="tab-pane fade {% if active_tab == 'doctor' %}show active{% endif %}" id="doctor-pane" role="tabpanel" aria-labelledby="doctor-tab" tabindex="0">
+                        <div class="alert alert-info py-2 px-3 small d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-shield-lock-fill fs-5 text-primary flex-shrink-0"></i>
+                            <div>
+                                <strong>Admin Verification Required:</strong> Doctor profiles undergo credential review by the administrator before portal access is activated.
+                            </div>
+                        </div>
+
+                        <form method="POST" action="{{ url_for('auth.register') }}" id="doctor-register-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <input type="hidden" name="role" value="doctor">
+
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label for="d_name" class="form-label fw-medium">Clinician / Doctor Full Name</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">Dr.</span>
+                                        <input type="text" class="form-control" id="d_name" name="name" placeholder="Full Name (e.g. Jane Doe)" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="d_email" class="form-label fw-medium">Professional Email Address</label>
+                                    <input type="email" class="form-control" id="d_email" name="email" placeholder="dr.name@clinic.com" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="d_phone" class="form-label fw-medium">Contact Phone Number</label>
+                                    <input type="tel" class="form-control" id="d_phone" name="phone" placeholder="+91 98765 43210" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="d_specialization" class="form-label fw-medium">Medical Specialization</label>
+                                    <select class="form-select" id="d_specialization" name="specialization" required>
+                                        <option value="" selected disabled>Select Specialization...</option>
+                                        <option value="General Physician">General Physician</option>
+                                        <option value="Cardiologist">Cardiologist</option>
+                                        <option value="Dermatologist">Dermatologist</option>
+                                        <option value="Pediatrician">Pediatrician</option>
+                                        <option value="Orthopedic Surgeon">Orthopedic Surgeon</option>
+                                        <option value="Neurologist">Neurologist</option>
+                                        <option value="Gynecologist">Gynecologist</option>
+                                        <option value="ENT Specialist">ENT Specialist</option>
+                                        <option value="Psychiatrist">Psychiatrist</option>
+                                        <option value="Ophthalmologist">Ophthalmologist</option>
+                                        <option value="Endocrinologist">Endocrinologist</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="d_qualification" class="form-label fw-medium">Medical Qualifications</label>
+                                    <input type="text" class="form-control" id="d_qualification" name="qualification" placeholder="e.g. MBBS, MD (General Medicine)" required>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="d_experience" class="form-label fw-medium">Experience (Years)</label>
+                                    <input type="number" class="form-control" id="d_experience" name="experience" min="0" max="60" value="5" required>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="d_fee" class="form-label fw-medium">Consultation Fee (₹)</label>
+                                    <input type="number" class="form-control" id="d_fee" name="fee" min="0" step="50" value="600" required>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="d_mode" class="form-label fw-medium">Consultation Mode</label>
+                                    <select class="form-select" id="d_mode" name="consultation_mode" required>
+                                        <option value="In-person & Video" selected>In-person & Video</option>
+                                        <option value="In-person">In-person Only</option>
+                                        <option value="Video">Video Telehealth Only</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="d_clinic" class="form-label fw-medium">Hospital / Clinic Name</label>
+                                    <input type="text" class="form-control" id="d_clinic" name="clinic" placeholder="e.g. CityCare Hospital & Clinic" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="d_location" class="form-label fw-medium">City / Location</label>
+                                    <input type="text" class="form-control" id="d_location" name="location" placeholder="e.g. Mumbai / Pune / Bengaluru" required>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label fw-medium d-block mb-1">Available Consulting Days</label>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %}
+                                        <div class="form-check form-check-inline bg-light p-2 rounded border">
+                                            <input class="form-check-input ms-1 me-1" type="checkbox" id="day_{{ day }}" name="available_days" value="{{ day }}" checked>
+                                            <label class="form-check-label small" for="day_{{ day }}">{{ day }}</label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="d_bio" class="form-label fw-medium">Medical Bio / Registration Notes</label>
+                                    <textarea class="form-control" id="d_bio" name="bio" rows="2" placeholder="Brief clinician bio and medical council registration number (e.g., Reg No: MCI-123456)"></textarea>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="d_password" class="form-label fw-medium">Password</label>
+                                    <input type="password" class="form-control" id="d_password" name="password" placeholder="At least 8 characters" minlength="8" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="d_confirm_password" class="form-label fw-medium">Confirm Password</label>
+                                    <input type="password" class="form-control" id="d_confirm_password" name="confirm_password" placeholder="Re-enter password" minlength="8" required>
+                                </div>
+                            </div>
+
+                            <div class="form-check mt-3 mb-4">
+                                <input class="form-check-input" type="checkbox" id="d_terms" required>
+                                <label class="form-check-label small text-muted" for="d_terms">
+                                    I certify that the provided medical qualifications and licenses are valid. I understand my account requires administrator approval before activation.
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-success w-100 py-2 mb-3">
+                                <i class="bi bi-file-earmark-medical me-2"></i>Submit Doctor Application for Admin Approval
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3 pt-3 border-top">
+                    <p class="text-muted small mb-0">Already registered? <a href="{{ url_for('auth.login') }}" class="text-decoration-none fw-semibold">Sign in to your account</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
